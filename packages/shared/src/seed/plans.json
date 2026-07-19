@@ -1,0 +1,9 @@
+[
+  { "name": "Premium PPO", "type": "medical", "monthlyPremium": 420 },
+  { "name": "Standard HMO", "type": "medical", "monthlyPremium": 280 },
+  { "name": "High Deductible", "type": "medical", "monthlyPremium": 175 },
+  { "name": "Dental Plus", "type": "dental", "monthlyPremium": 45 },
+  { "name": "Basic Dental", "type": "dental", "monthlyPremium": 22 },
+  { "name": "Vision Premium", "type": "vision", "monthlyPremium": 18 },
+  { "name": "Vision Basic", "type": "vision", "monthlyPremium": 9 }
+]

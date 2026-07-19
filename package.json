@@ -1,0 +1,18 @@
+{
+  "name": "benefits-agent-root",
+  "private": true,
+  "workspaces": ["apps/*", "packages/*"],
+  "scripts": {
+    "dev": "concurrently -n web,rs -c cyan,yellow \"npm run dev -w apps/web\" \"npm run dev -w apps/resource-server\"",
+    "build": "npm run build -w packages/shared && npm run build -w apps/resource-server && npm run build -w apps/web",
+    "test": "vitest run",
+    "seed": "tsx packages/shared/src/seed/run-seed.ts"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.0",
+    "vitest": "^3.0.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.0",
+    "@types/node": "^22.0.0"
+  }
+}

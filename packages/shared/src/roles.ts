@@ -1,0 +1,46 @@
+import type { Role, Scope } from './types.js';
+
+export const ROLE_SCOPES: Record<Role, Scope[]> = {
+  hr_admin: [
+    'benefits.record.read',
+    'benefits.compensation.read',
+    'benefits.notes.read',
+    'benefits.enrollment.read',
+    'benefits.enrollment.write',
+    'benefits.pto.read',
+    'benefits.audit.read',
+  ],
+  benefits_specialist: [
+    'benefits.record.read',
+    'benefits.enrollment.read',
+    'benefits.enrollment.write',
+    'benefits.pto.read',
+  ],
+  manager: [
+    'benefits.record.read',
+    'benefits.enrollment.read',
+    'benefits.pto.read',
+  ],
+  employee: [
+    'benefits.record.read',
+    'benefits.enrollment.read',
+    'benefits.enrollment.write',
+    'benefits.pto.read',
+  ],
+};
+
+const GROUP_TO_ROLE: Record<string, Role> = {
+  'HR-Admins': 'hr_admin',
+  'Benefits-Team': 'benefits_specialist',
+  Managers: 'manager',
+  Employees: 'employee',
+};
+
+export function groupsToRole(groups: string[]): Role {
+  const order: Role[] = ['hr_admin', 'benefits_specialist', 'manager', 'employee'];
+  for (const role of order) {
+    const group = Object.entries(GROUP_TO_ROLE).find(([, r]) => r === role)?.[0];
+    if (group && groups.includes(group)) return role;
+  }
+  return 'employee';
+}

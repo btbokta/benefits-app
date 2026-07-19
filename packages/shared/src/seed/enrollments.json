@@ -1,0 +1,35 @@
+[
+  { "employeeEmail": "sarah.johnson@acmecorp.example", "planId": 1, "coverageLevel": "family", "effectiveDate": "2025-01-01" },
+  { "employeeEmail": "sarah.johnson@acmecorp.example", "planId": 4, "coverageLevel": "family", "effectiveDate": "2025-01-01" },
+  { "employeeEmail": "sarah.johnson@acmecorp.example", "planId": 6, "coverageLevel": "family", "effectiveDate": "2025-01-01" },
+
+  { "employeeEmail": "james.wilson@acmecorp.example", "planId": 2, "coverageLevel": "self+spouse", "effectiveDate": "2025-01-01" },
+  { "employeeEmail": "james.wilson@acmecorp.example", "planId": 5, "coverageLevel": "self+spouse", "effectiveDate": "2025-01-01" },
+
+  { "employeeEmail": "michael.chen@acmecorp.example", "planId": 1, "coverageLevel": "family", "effectiveDate": "2025-01-01" },
+  { "employeeEmail": "michael.chen@acmecorp.example", "planId": 4, "coverageLevel": "family", "effectiveDate": "2025-01-01" },
+  { "employeeEmail": "michael.chen@acmecorp.example", "planId": 6, "coverageLevel": "family", "effectiveDate": "2025-01-01" },
+
+  { "employeeEmail": "emily.davis@acmecorp.example", "planId": 3, "coverageLevel": "self", "effectiveDate": "2025-01-01" },
+  { "employeeEmail": "emily.davis@acmecorp.example", "planId": 5, "coverageLevel": "self", "effectiveDate": "2025-01-01" },
+
+  { "employeeEmail": "lisa.park@acmecorp.example", "planId": 2, "coverageLevel": "self+spouse", "effectiveDate": "2025-01-01" },
+  { "employeeEmail": "lisa.park@acmecorp.example", "planId": 4, "coverageLevel": "self+spouse", "effectiveDate": "2025-01-01" },
+  { "employeeEmail": "lisa.park@acmecorp.example", "planId": 7, "coverageLevel": "self+spouse", "effectiveDate": "2025-01-01" },
+
+  { "employeeEmail": "david.kim@acmecorp.example", "planId": 2, "coverageLevel": "self", "effectiveDate": "2025-01-01" },
+  { "employeeEmail": "david.kim@acmecorp.example", "planId": 5, "coverageLevel": "self", "effectiveDate": "2025-01-01" },
+
+  { "employeeEmail": "rachel.torres@acmecorp.example", "planId": 1, "coverageLevel": "self+spouse", "effectiveDate": "2025-01-01" },
+  { "employeeEmail": "rachel.torres@acmecorp.example", "planId": 4, "coverageLevel": "self+spouse", "effectiveDate": "2025-01-01" },
+
+  { "employeeEmail": "marcus.williams@acmecorp.example", "planId": 2, "coverageLevel": "family", "effectiveDate": "2025-01-01" },
+  { "employeeEmail": "marcus.williams@acmecorp.example", "planId": 5, "coverageLevel": "family", "effectiveDate": "2025-01-01" },
+
+  { "employeeEmail": "priya.sharma@acmecorp.example", "planId": 1, "coverageLevel": "self", "effectiveDate": "2025-01-01" },
+  { "employeeEmail": "priya.sharma@acmecorp.example", "planId": 4, "coverageLevel": "self", "effectiveDate": "2025-01-01" },
+  { "employeeEmail": "priya.sharma@acmecorp.example", "planId": 6, "coverageLevel": "self", "effectiveDate": "2025-01-01" },
+
+  { "employeeEmail": "jordan.lee@acmecorp.example", "planId": 2, "coverageLevel": "self+spouse", "effectiveDate": "2025-01-01" },
+  { "employeeEmail": "jordan.lee@acmecorp.example", "planId": 5, "coverageLevel": "self+spouse", "effectiveDate": "2025-01-01" }
+]

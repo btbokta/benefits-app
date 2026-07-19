@@ -1,0 +1,112 @@
+[
+  {
+    "firstName": "Sarah",
+    "lastName": "Johnson",
+    "email": "sarah.johnson@acmecorp.example",
+    "department": "Human Resources",
+    "title": "HR Director",
+    "managerEmail": null,
+    "role": "hr_admin",
+    "salary": 145000,
+    "hrNotes": "Outstanding performance review 2025. Leads benefits redesign project."
+  },
+  {
+    "firstName": "James",
+    "lastName": "Wilson",
+    "email": "james.wilson@acmecorp.example",
+    "department": "Human Resources",
+    "title": "Benefits Specialist",
+    "managerEmail": "sarah.johnson@acmecorp.example",
+    "role": "benefits_specialist",
+    "salary": 82000,
+    "hrNotes": "Certified benefits administrator. Handles open enrollment."
+  },
+  {
+    "firstName": "Michael",
+    "lastName": "Chen",
+    "email": "michael.chen@acmecorp.example",
+    "department": "Engineering",
+    "title": "Engineering Manager",
+    "managerEmail": null,
+    "role": "manager",
+    "salary": 155000,
+    "hrNotes": "Manages the platform team. Strong technical lead."
+  },
+  {
+    "firstName": "Emily",
+    "lastName": "Davis",
+    "email": "emily.davis@acmecorp.example",
+    "department": "Engineering",
+    "title": "Software Engineer",
+    "managerEmail": "michael.chen@acmecorp.example",
+    "role": "employee",
+    "salary": 115000,
+    "hrNotes": "Junior engineer, 2 years tenure."
+  },
+  {
+    "firstName": "Lisa",
+    "lastName": "Park",
+    "email": "lisa.park@acmecorp.example",
+    "department": "Engineering",
+    "title": "Senior Software Engineer",
+    "managerEmail": "michael.chen@acmecorp.example",
+    "role": "employee",
+    "salary": 132000,
+    "hrNotes": "Senior engineer, strong contributor to Q4 release."
+  },
+  {
+    "firstName": "David",
+    "lastName": "Kim",
+    "email": "david.kim@acmecorp.example",
+    "department": "Finance",
+    "title": "Financial Analyst",
+    "managerEmail": "sarah.johnson@acmecorp.example",
+    "role": "employee",
+    "salary": 95000,
+    "hrNotes": "Joined 2024. Handles payroll reconciliation."
+  },
+  {
+    "firstName": "Rachel",
+    "lastName": "Torres",
+    "email": "rachel.torres@acmecorp.example",
+    "department": "Sales",
+    "title": "Account Executive",
+    "managerEmail": null,
+    "role": "employee",
+    "salary": 88000,
+    "hrNotes": "Top performer Q3 2025. Commission eligible."
+  },
+  {
+    "firstName": "Marcus",
+    "lastName": "Williams",
+    "email": "marcus.williams@acmecorp.example",
+    "department": "Engineering",
+    "title": "DevOps Engineer",
+    "managerEmail": "michael.chen@acmecorp.example",
+    "role": "employee",
+    "salary": 125000,
+    "hrNotes": "Cloud infrastructure lead."
+  },
+  {
+    "firstName": "Priya",
+    "lastName": "Sharma",
+    "email": "priya.sharma@acmecorp.example",
+    "department": "Finance",
+    "title": "Senior Financial Analyst",
+    "managerEmail": "sarah.johnson@acmecorp.example",
+    "role": "employee",
+    "salary": 108000,
+    "hrNotes": "7 years tenure. Leads FP&A reporting."
+  },
+  {
+    "firstName": "Jordan",
+    "lastName": "Lee",
+    "email": "jordan.lee@acmecorp.example",
+    "department": "Sales",
+    "title": "Sales Manager",
+    "managerEmail": null,
+    "role": "manager",
+    "salary": 118000,
+    "hrNotes": "Manages west region sales team."
+  }
+]

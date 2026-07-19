@@ -1,0 +1,12 @@
+[
+  { "employeeEmail": "sarah.johnson@acmecorp.example", "vacationHours": 120, "sickHours": 48, "personalHours": 16 },
+  { "employeeEmail": "james.wilson@acmecorp.example", "vacationHours": 80, "sickHours": 40, "personalHours": 8 },
+  { "employeeEmail": "michael.chen@acmecorp.example", "vacationHours": 160, "sickHours": 48, "personalHours": 16 },
+  { "employeeEmail": "emily.davis@acmecorp.example", "vacationHours": 40, "sickHours": 24, "personalHours": 8 },
+  { "employeeEmail": "lisa.park@acmecorp.example", "vacationHours": 100, "sickHours": 40, "personalHours": 8 },
+  { "employeeEmail": "david.kim@acmecorp.example", "vacationHours": 60, "sickHours": 32, "personalHours": 8 },
+  { "employeeEmail": "rachel.torres@acmecorp.example", "vacationHours": 72, "sickHours": 40, "personalHours": 8 },
+  { "employeeEmail": "marcus.williams@acmecorp.example", "vacationHours": 88, "sickHours": 40, "personalHours": 16 },
+  { "employeeEmail": "priya.sharma@acmecorp.example", "vacationHours": 140, "sickHours": 48, "personalHours": 16 },
+  { "employeeEmail": "jordan.lee@acmecorp.example", "vacationHours": 96, "sickHours": 40, "personalHours": 8 }
+]

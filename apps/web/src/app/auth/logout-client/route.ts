@@ -7,6 +7,11 @@ export async function GET(req: NextRequest) {
   const idToken = session.idToken ?? '';
   session.destroy();
 
+  // If no id token, skip Okta RP-initiated logout — just go home
+  if (!idToken) {
+    return NextResponse.redirect(new URL('/', req.url));
+  }
+
   try {
     const logoutUrl = await buildLogoutUrl(idToken);
     return NextResponse.redirect(logoutUrl);

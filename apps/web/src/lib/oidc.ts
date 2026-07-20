@@ -134,9 +134,11 @@ export async function buildLogoutUrl(idToken: string): Promise<string> {
   if (!endSessionEndpoint) return '/';
 
   const params = new URLSearchParams({
-    id_token_hint: idToken,
     post_logout_redirect_uri: process.env.OKTA_POST_LOGOUT_URI ?? 'http://localhost:3000',
   });
+  // Only include id_token_hint when we have a valid token — empty string causes Okta 400
+  if (idToken) params.set('id_token_hint', idToken);
+
   return `${endSessionEndpoint}?${params.toString()}`;
 }
 

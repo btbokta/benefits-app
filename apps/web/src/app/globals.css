@@ -135,6 +135,13 @@ body {
   border: 1px solid rgba(239,68,68,0.3);
 }
 
+/* ── Story beat row hover ────────────────────────────────────────────────── */
+.story-beat-row { transition: border-color 0.15s, background 0.15s; }
+.story-beat-row:hover {
+  border-color: var(--outline) !important;
+  background: var(--surface) !important;
+}
+
 /* ── Scope chip ──────────────────────────────────────────────────────────── */
 .scope-chip {
   font-family: 'JetBrains Mono', monospace;

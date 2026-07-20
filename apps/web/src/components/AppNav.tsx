@@ -5,11 +5,12 @@ import { usePathname } from 'next/navigation';
 import { useState, useEffect } from 'react';
 
 const NAV = [
-  { href: '/',       label: 'Dashboard',   icon: 'shield_person' },
-  { href: '/flow',   label: 'Token Flows', icon: 'account_tree'  },
-  { href: '/chat',   label: 'Agent Chat',  icon: 'smart_toy'     },
-  { href: '/audit',  label: 'Audit Log',   icon: 'list_alt'      },
-  { href: '/story',  label: 'Demo Guide',  icon: 'play_circle'   },
+  { href: '/',               label: 'Dashboard',    icon: 'shield_person' },
+  { href: '/flow',           label: 'Token Flows',  icon: 'account_tree'  },
+  { href: '/chat',           label: 'Agent Chat',   icon: 'smart_toy'     },
+  { href: '/audit',          label: 'Audit Log',    icon: 'list_alt'      },
+  { href: '/architectures',  label: 'Ref. Arch.',   icon: 'schema'        },
+  { href: '/story',          label: 'Demo Guide',   icon: 'play_circle'   },
 ];
 
 interface Me {

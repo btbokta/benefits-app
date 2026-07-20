@@ -56,7 +56,7 @@ if (hasClaim) {
       claimType,
       valueType: 'GROUPS',
       group_filter_type: 'REGEX',
-      value: '^(HR-Admins|Benefits-Team|Managers|Employees)$',
+      value: '^(BenefitsDemo-HR-Admins|BenefitsDemo-Benefits-Team|BenefitsDemo-Managers|BenefitsDemo-Employees)$',
       conditions: { scopes: [] },
     });
     console.log(`  ${status < 300 ? '✓' : '✗'} ${claimType}: ${status}${status >= 300 ? ' — ' + body.errorSummary : ''}`);

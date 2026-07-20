@@ -40,9 +40,9 @@ async function check(label, url, validate) {
 
 console.log('\nVerifying Okta org setup…\n');
 
-await check('Groups: HR-Admins exists', `${ORG}/api/v1/groups?q=HR-Admins&limit=5`, b => Array.isArray(b) && b.some(g => g.profile?.name === 'HR-Admins'));
-await check('Groups: Benefits-Team exists', `${ORG}/api/v1/groups?q=Benefits-Team&limit=5`, b => Array.isArray(b) && b.some(g => g.profile?.name === 'Benefits-Team'));
-await check('Groups: Managers exists', `${ORG}/api/v1/groups?q=Managers&limit=5`, b => Array.isArray(b) && b.some(g => g.profile?.name === 'Managers'));
+await check('Groups: BenefitsDemo-HR-Admins exists', `${ORG}/api/v1/groups?q=BenefitsDemo-HR-Admins&limit=5`, b => Array.isArray(b) && b.some(g => g.profile?.name === 'BenefitsDemo-HR-Admins'));
+await check('Groups: BenefitsDemo-Benefits-Team exists', `${ORG}/api/v1/groups?q=BenefitsDemo-Benefits-Team&limit=5`, b => Array.isArray(b) && b.some(g => g.profile?.name === 'BenefitsDemo-Benefits-Team'));
+await check('Groups: BenefitsDemo-Managers exists', `${ORG}/api/v1/groups?q=BenefitsDemo-Managers&limit=5`, b => Array.isArray(b) && b.some(g => g.profile?.name === 'BenefitsDemo-Managers'));
 await check('Users: sarah.johnson exists', `${ORG}/api/v1/users/sarah.johnson%40acmecorp.example`, b => !!b.id);
 await check('Users: emily.davis exists', `${ORG}/api/v1/users/emily.davis%40acmecorp.example`, b => !!b.id);
 await check('Web app exists', `${ORG}/api/v1/apps?q=Benefits+Agent+-+Web&limit=5`, b => Array.isArray(b) && b.some(a => a.label === 'Benefits Agent - Web'));

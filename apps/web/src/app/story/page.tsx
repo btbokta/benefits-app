@@ -3,7 +3,7 @@ import Link from 'next/link';
 
 const GROUPS = [
   {
-    name: 'HR-Admins',
+    name: 'BenefitsDemo-HR-Admins',
     color: 'var(--persona-hr)',
     bg: 'rgba(251,191,36,0.08)',
     border: 'rgba(251,191,36,0.25)',
@@ -13,7 +13,7 @@ const GROUPS = [
     scopes: ['record.read', 'compensation.read', 'notes.read', 'enrollment.read', 'enrollment.write', 'pto.read', 'audit.read'],
   },
   {
-    name: 'Benefits-Team',
+    name: 'BenefitsDemo-Benefits-Team',
     color: 'var(--persona-specialist)',
     bg: 'rgba(34,211,238,0.08)',
     border: 'rgba(34,211,238,0.25)',
@@ -23,7 +23,7 @@ const GROUPS = [
     scopes: ['record.read', 'enrollment.read', 'enrollment.write', 'pto.read'],
   },
   {
-    name: 'Managers',
+    name: 'BenefitsDemo-Managers',
     color: 'var(--persona-manager)',
     bg: 'rgba(168,85,247,0.08)',
     border: 'rgba(168,85,247,0.25)',
@@ -33,7 +33,7 @@ const GROUPS = [
     scopes: ['record.read', 'enrollment.read', 'pto.read'],
   },
   {
-    name: 'Employees',
+    name: 'BenefitsDemo-Employees',
     color: 'var(--persona-employee)',
     bg: 'rgba(34,197,94,0.08)',
     border: 'rgba(34,197,94,0.25)',

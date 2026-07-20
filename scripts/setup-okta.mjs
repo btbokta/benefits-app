@@ -63,7 +63,7 @@ async function getOrCreate(searchPath, searchQuery, createPath, createBody, idFi
 
 // ── 2.1 Groups ────────────────────────────────────────────────────────────────
 console.log('\n[2.1] Groups');
-const groupNames = ['HR-Admins', 'Benefits-Team', 'Managers', 'Employees'];
+const groupNames = ['BenefitsDemo-HR-Admins', 'BenefitsDemo-Benefits-Team', 'BenefitsDemo-Managers', 'BenefitsDemo-Employees'];
 const groups = {};
 for (const name of groupNames) {
   process.stdout.write(`  ${name}: `);
@@ -74,11 +74,11 @@ for (const name of groupNames) {
 // ── 2.2 Users ─────────────────────────────────────────────────────────────────
 console.log('\n[2.2] Users');
 const personas = [
-  { firstName: 'Sarah', lastName: 'Johnson', email: 'sarah.johnson@acmecorp.example', group: 'HR-Admins' },
-  { firstName: 'James', lastName: 'Wilson', email: 'james.wilson@acmecorp.example', group: 'Benefits-Team' },
-  { firstName: 'Michael', lastName: 'Chen', email: 'michael.chen@acmecorp.example', group: 'Managers' },
-  { firstName: 'Emily', lastName: 'Davis', email: 'emily.davis@acmecorp.example', group: 'Employees' },
-  { firstName: 'Lisa', lastName: 'Park', email: 'lisa.park@acmecorp.example', group: 'Employees' },
+  { firstName: 'Sarah', lastName: 'Johnson', email: 'sarah.johnson@acmecorp.example', group: 'BenefitsDemo-HR-Admins' },
+  { firstName: 'James', lastName: 'Wilson', email: 'james.wilson@acmecorp.example', group: 'BenefitsDemo-Benefits-Team' },
+  { firstName: 'Michael', lastName: 'Chen', email: 'michael.chen@acmecorp.example', group: 'BenefitsDemo-Managers' },
+  { firstName: 'Emily', lastName: 'Davis', email: 'emily.davis@acmecorp.example', group: 'BenefitsDemo-Employees' },
+  { firstName: 'Lisa', lastName: 'Park', email: 'lisa.park@acmecorp.example', group: 'BenefitsDemo-Employees' },
 ];
 
 const createdUsers = {};
@@ -103,8 +103,8 @@ for (const p of personas) {
     await api('PUT', `/api/v1/groups/${groups[p.group]}/users/${user.id}`, {});
   }
   // Everyone goes in Employees
-  if (p.group !== 'Employees' && groups['Employees'] && user.id) {
-    await api('PUT', `/api/v1/groups/${groups['Employees']}/users/${user.id}`, {});
+  if (p.group !== 'BenefitsDemo-Employees' && groups['BenefitsDemo-Employees'] && user.id) {
+    await api('PUT', `/api/v1/groups/${groups['BenefitsDemo-Employees']}/users/${user.id}`, {});
   }
 }
 
@@ -238,7 +238,7 @@ if (hasClaim) {
       claimType,
       valueType: 'GROUPS',
       group_filter_type: 'REGEX',
-      value: '^(HR-Admins|Benefits-Team|Managers|Employees)$',
+      value: '^(BenefitsDemo-HR-Admins|BenefitsDemo-Benefits-Team|BenefitsDemo-Managers|BenefitsDemo-Employees)$',
       conditions: { scopes: [] },
     });
     console.log(`  ${status < 300 ? '✓' : '✗'} groups claim (${claimType}): ${status}${status >= 300 ? ' — ' + JSON.stringify(body?.errorSummary) : ''}`);
@@ -349,7 +349,7 @@ console.log(`  OKTA_AGENT_CLIENT_ID=${agentClientId || '(not set)'}`);
 // ── 2.9 Manual step reminder ──────────────────────────────────────────────────
 console.log('\n[2.9] MANUAL STEP (Mode A/B):');
 console.log('  Applications → Benefits Agent - Web → Sign On tab → OpenID Connect ID Token → Edit');
-console.log('  Groups claim filter: groups   Matches regex   ^(HR-Admins|Benefits-Team|Managers|Employees)$');
+console.log('  Groups claim filter: groups   Matches regex   ^(BenefitsDemo-HR-Admins|BenefitsDemo-Benefits-Team|BenefitsDemo-Managers|BenefitsDemo-Employees)$');
 console.log('  → Save');
 
 console.log('\n✅ GATE 2 setup complete. Run: node scripts/verify-okta.mjs');

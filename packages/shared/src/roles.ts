@@ -30,10 +30,10 @@ export const ROLE_SCOPES: Record<Role, Scope[]> = {
 };
 
 const GROUP_TO_ROLE: Record<string, Role> = {
-  'HR-Admins': 'hr_admin',
-  'Benefits-Team': 'benefits_specialist',
-  Managers: 'manager',
-  Employees: 'employee',
+  'BenefitsDemo-HR-Admins': 'hr_admin',
+  'BenefitsDemo-Benefits-Team': 'benefits_specialist',
+  'BenefitsDemo-Managers': 'manager',
+  'BenefitsDemo-Employees': 'employee',
 };
 
 export function groupsToRole(groups: string[]): Role {

@@ -24,9 +24,9 @@ export function resolveUserEmail(principal: Principal, db: Database.Database): s
 }
 
 export function deriveRole(principal: Principal, employee: Employee): Role {
-  if (principal.groups?.includes('HR-Admins')) return 'hr_admin';
-  if (principal.groups?.includes('Benefits-Team')) return 'benefits_specialist';
-  if (principal.groups?.includes('Managers')) return 'manager';
+  if (principal.groups?.includes('BenefitsDemo-HR-Admins')) return 'hr_admin';
+  if (principal.groups?.includes('BenefitsDemo-Benefits-Team')) return 'benefits_specialist';
+  if (principal.groups?.includes('BenefitsDemo-Managers')) return 'manager';
   if (principal.groups && principal.groups.length > 0) {
     return groupsToRole(principal.groups);
   }

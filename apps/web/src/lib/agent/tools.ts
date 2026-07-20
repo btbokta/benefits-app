@@ -1,6 +1,14 @@
 import { z } from 'zod';
 
-const RS = process.env.RESOURCE_SERVER_URL ?? 'http://localhost:3001';
+// Local dev with Express RS: RESOURCE_SERVER_URL=http://localhost:3001
+// Vercel: RESOURCE_SERVER_URL=https://your-app.vercel.app (or auto via VERCEL_URL)
+// Local dev without Express RS: falls back to same Next.js server on :3000
+function getRsBase(): string {
+  if (process.env.RESOURCE_SERVER_URL) return process.env.RESOURCE_SERVER_URL;
+  if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
+  return 'http://localhost:3000';
+}
+const RS = getRsBase();
 
 export interface ToolEvent {
   tool: string;
@@ -131,33 +139,33 @@ export async function executeTool(
 
   switch (name) {
     case 'list_employees':
-      res = await rsGet('/api/employees', bearerToken);
+      res = await rsGet('/api/rs/employees', bearerToken);
       break;
     case 'get_employee':
-      res = await rsGet(`/api/employees/${encodeURIComponent(input.email as string)}`, bearerToken);
+      res = await rsGet(`/api/rs/employees/${encodeURIComponent(input.email as string)}`, bearerToken);
       break;
     case 'get_compensation':
-      res = await rsGet(`/api/compensation/${encodeURIComponent(input.email as string)}`, bearerToken);
+      res = await rsGet(`/api/rs/compensation/${encodeURIComponent(input.email as string)}`, bearerToken);
       break;
     case 'list_plans':
-      res = await rsGet('/api/plans', bearerToken);
+      res = await rsGet('/api/rs/plans', bearerToken);
       break;
     case 'get_enrollments': {
       const q = input.employee ? `?employee=${encodeURIComponent(input.employee as string)}` : '';
-      res = await rsGet(`/api/enrollments${q}`, bearerToken);
+      res = await rsGet(`/api/rs/enrollments${q}`, bearerToken);
       break;
     }
     case 'enroll_in_plan':
-      res = await rsPost('/api/enrollments', bearerToken, input);
+      res = await rsPost('/api/rs/enrollments', bearerToken, input);
       break;
     case 'get_pto': {
       const q = input.employee ? `?employee=${encodeURIComponent(input.employee as string)}` : '';
-      res = await rsGet(`/api/pto${q}`, bearerToken);
+      res = await rsGet(`/api/rs/pto${q}`, bearerToken);
       break;
     }
     case 'read_audit': {
       const q = input.limit ? `?limit=${input.limit}` : '';
-      res = await rsGet(`/api/audit${q}`, bearerToken);
+      res = await rsGet(`/api/rs/audit${q}`, bearerToken);
       break;
     }
     default:

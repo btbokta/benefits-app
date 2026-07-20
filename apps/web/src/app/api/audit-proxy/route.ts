@@ -2,7 +2,11 @@ import { NextResponse } from 'next/server';
 import { getSessionUser } from '@/lib/session';
 import { getAgentToken, BrokerError } from '@/lib/token-broker';
 
-const RS = process.env.RESOURCE_SERVER_URL ?? 'http://localhost:3001';
+function getRsBase() {
+  if (process.env.RESOURCE_SERVER_URL) return process.env.RESOURCE_SERVER_URL;
+  if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
+  return 'http://localhost:3000';
+}
 
 export async function GET() {
   const user = await getSessionUser();
@@ -18,7 +22,7 @@ export async function GET() {
     throw err;
   }
 
-  const res = await fetch(`${RS}/api/audit`, {
+  const res = await fetch(`${getRsBase()}/api/rs/audit`, {
     headers: { Authorization: `Bearer ${token.accessToken}` },
   });
 

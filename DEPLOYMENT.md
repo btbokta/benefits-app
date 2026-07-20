@@ -2,14 +2,16 @@
 
 ## Architecture overview
 
-The app is a two-service monorepo:
+Everything deploys to **Vercel** as a single Next.js app.
 
-| Service | Framework | Port | Deploy to |
-|---|---|---|---|
-| `apps/web` | Next.js 14 (App Router) | 3000 | **Vercel** |
-| `apps/resource-server` | Express 4 + SQLite | 3001 | **Railway** (or Render / Fly.io) |
+| What | Where | Notes |
+|---|---|---|
+| `apps/web` | Vercel | Includes both the UI and the resource-server API routes at `/api/rs/*` |
+| Data | In-memory (JSON seed files) | Employees/plans/PTO seeded from JSON on cold start. Audit log in-memory — resets on redeploy/cold start. Acceptable for demo use. |
 
-The resource server must be deployed somewhere that supports a persistent Node.js process and a writable filesystem for SQLite. Vercel's serverless model doesn't support this — hence the split.
+> **Local dev:** The Express resource server (`apps/resource-server`) still runs on :3001 when you `npm run dev` — set `RESOURCE_SERVER_URL=http://localhost:3001` in your local `.env` to use it. On Vercel, leave `RESOURCE_SERVER_URL` unset and it auto-uses the Next.js routes.
+
+> **Caveat:** Audit log entries do not survive Vercel redeployments or cold starts (Vercel scales down idle functions after ~5 min inactivity). The demo story still works — the log fills up as you run queries during a session.
 
 ---
 
@@ -34,43 +36,16 @@ git push -u origin main
 
 ---
 
-## Step 2 — Deploy the resource server to Railway
+## Step 2 — Deploy to Vercel
 
-Railway gives the resource server a public HTTPS URL and persistent storage (needed for SQLite).
-
-1. Go to https://railway.app → New Project → **Deploy from GitHub repo**
-2. Select `benefits-agent-demo`
-3. Railway auto-detects Node.js — set the **Root Directory** to `apps/resource-server`
-4. Set **Start Command**: `npm start` (or `node dist/index.js` after build)
-5. Add a **Build Command**: `npm run build` (runs `tsc`)
-
-**Environment variables in Railway** (Settings → Variables):
-
-```
-OKTA_ORG_URL=https://veridiandynamics.okta.com
-RESOURCE_AUDIENCE=api://default
-RESOURCE_BASE_URL=https://your-rs.railway.app   # Railway provides this URL
-WEB_ORIGIN=https://your-app.vercel.app           # Fill in after Vercel deploy
-NODE_ENV=production
-PORT=3001
-```
-
-> Railway assigns a public URL like `https://benefits-agent-demo-production.up.railway.app`. Copy it — you'll need it for `RESOURCE_SERVER_URL` in Vercel.
-
----
-
-## Step 3 — Deploy the web app to Vercel
-
-1. Go to https://vercel.com/new → Import Git Repository → select `benefits-agent-demo`
+1. Go to https://vercel.com/new → Import Git Repository → select `benefits-app`
 2. **Framework Preset**: Next.js (auto-detected)
 3. **Root Directory**: `apps/web`
-4. **Build Command**: `cd ../.. && npm install && npm run build -w apps/web` *(installs workspace deps first)*
+4. **Install Command**: `cd ../.. && npm install --cache /tmp/npm-cache`
+5. **Build Command**: `next build`
+6. **Output Directory**: `.next` (default)
 
-   Or override to: `npm install --legacy-peer-deps && next build`
-
-5. **Output Directory**: `.next` (default)
-
-**Environment variables in Vercel** (Project Settings → Environment Variables):
+**Environment variables** (Project Settings → Environment Variables → add each):
 
 ```bash
 # Okta
@@ -83,13 +58,12 @@ OKTA_POST_LOGOUT_URI=https://your-app.vercel.app
 
 # Agent identity
 OKTA_AGENT_CLIENT_ID=wlp15eh9z6hj8G8tb698
-OKTA_AGENT_PRIVATE_JWK=<paste full PEM — see note below>
+OKTA_AGENT_PRIVATE_JWK=<paste full PEM including BEGIN/END lines>
 OKTA_AGENT_KID=<your KID>
 
-# Resource server
-RESOURCE_SERVER_URL=https://your-rs.railway.app
+# Resource server (leave RESOURCE_SERVER_URL unset — auto-uses VERCEL_URL)
 RESOURCE_AUDIENCE=api://default
-RESOURCE_BASE_URL=https://your-rs.railway.app
+RESOURCE_BASE_URL=https://your-app.vercel.app
 USER_IDENTITY_CLAIM=sub
 
 # Session
@@ -106,7 +80,7 @@ AGENT_TOOL_TRANSPORT=rest
 NEXT_PUBLIC_OKTA_ORG_URL=https://veridiandynamics.okta.com
 ```
 
-> **PEM key in Vercel:** Vercel env vars support multi-line values. In the Vercel UI, paste the full PEM block (including `-----BEGIN PRIVATE KEY-----` and `-----END PRIVATE KEY-----`) directly into the value field — it handles newlines correctly.
+> **PEM key:** Paste the full multi-line PEM directly into the Vercel env var UI — it handles newlines correctly.
 
 ---
 

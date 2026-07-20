@@ -30,3 +30,14 @@ Build in progress following v2 Implementation Plan.
 ## Phase 2.9 — Manual (HUMAN)
 - [ ] Applications → Benefits Agent - Web → Sign On tab → OpenID Connect ID Token → Edit
       Groups claim filter: `groups` Matches regex `^(HR-Admins|Benefits-Team|Managers|Employees)$` → Save
+
+## Phase 0 Preflight — 2026-07-20T13:24:39.340Z
+
+| Probe | Result |
+|---|---|
+| Org API | ✅ undefined |
+| Org AS discovery | ✅ |
+| Custom AS (default) | ✅ |
+| Mode A API | ✅ Available |
+
+OKTA_AI_MODE recommendation: `agents`

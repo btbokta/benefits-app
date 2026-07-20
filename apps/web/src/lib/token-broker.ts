@@ -1,7 +1,7 @@
 import { decodeJwt } from 'jose';
-import type { SessionData } from './session.js';
+import type { SessionData } from './session';
 import { ROLE_SCOPES } from '@benefits-agent/shared';
-import { clientAssertion } from './client-assertion.js';
+import { clientAssertion } from './client-assertion';
 
 export interface TokenChainStage {
   stage: string;

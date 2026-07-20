@@ -232,16 +232,16 @@ if (hasClaim) {
   console.log('  ✓ groups claim already exists');
 } else {
   for (const claimType of ['RESOURCE', 'IDENTITY']) {
-    const { status } = await api('POST', '/api/v1/authorizationServers/default/claims', {
+    const { status, body } = await api('POST', '/api/v1/authorizationServers/default/claims', {
       name: 'groups',
       status: 'ACTIVE',
       claimType,
       valueType: 'GROUPS',
-      groupFilterType: 'REGEX',
+      group_filter_type: 'REGEX',
       value: '^(HR-Admins|Benefits-Team|Managers|Employees)$',
       conditions: { scopes: [] },
     });
-    console.log(`  ${status < 300 ? '✓' : '✗'} groups claim (${claimType}): ${status}`);
+    console.log(`  ${status < 300 ? '✓' : '✗'} groups claim (${claimType}): ${status}${status >= 300 ? ' — ' + JSON.stringify(body?.errorSummary) : ''}`);
   }
 }
 

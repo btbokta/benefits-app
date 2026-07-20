@@ -1,4 +1,10 @@
 #!/usr/bin/env node
+// Node 18 polyfill for Web Crypto global (required by jose)
+import { webcrypto } from 'node:crypto';
+if (typeof globalThis.crypto === 'undefined') {
+  Object.defineProperty(globalThis, 'crypto', { value: webcrypto });
+}
+
 /**
  * Phase 5.1 — Generate RS256 JWK pair for the agent's private-key-JWT authentication.
  * - Writes private JWK (single-line JSON) to .env as OKTA_AGENT_PRIVATE_JWK + OKTA_AGENT_KID
@@ -15,7 +21,7 @@ const root = resolve(__dir, '..');
 const envPath = resolve(root, '.env');
 
 const kid = randomUUID();
-const { privateKey, publicKey } = await generateKeyPair('RS256');
+const { privateKey, publicKey } = await generateKeyPair('RS256', { extractable: true });
 
 const privateJwk = await exportJWK(privateKey);
 privateJwk.kid = kid;

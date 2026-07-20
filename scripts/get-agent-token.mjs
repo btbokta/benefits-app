@@ -17,20 +17,8 @@ import { fileURLToPath } from 'node:url';
 const __dir = dirname(fileURLToPath(import.meta.url));
 const root = resolve(__dir, '..');
 
-function loadEnv() {
-  const p = resolve(root, '.env');
-  if (!existsSync(p)) return;
-  for (const line of readFileSync(p, 'utf8').split('\n')) {
-    const t = line.trim();
-    if (!t || t.startsWith('#')) continue;
-    const eq = t.indexOf('=');
-    if (eq < 0) continue;
-    const k = t.slice(0, eq).trim();
-    const v = t.slice(eq + 1).trim().replace(/^["']|["']$/g, '');
-    if (k && v) process.env[k] = v;
-  }
-}
-loadEnv();
+import { loadEnv } from './load-env.mjs';
+loadEnv(resolve(root, '.env'));
 
 const mode = process.env.OKTA_AI_MODE ?? 'obo';
 const org = (process.env.OKTA_ORG_URL ?? '').replace(/\/$/, '');
@@ -80,11 +68,14 @@ if (mode === 'agents' || mode === 'xaa') {
     process.exit(1);
   }
 
-  const { importJWK, SignJWT } = await import('jose');
+  const { importJWK, importPKCS8, SignJWT } = await import('jose');
   const { randomUUID } = await import('node:crypto');
 
   async function assertion(endpoint) {
-    const key = await importJWK(JSON.parse(privateJwkRaw), 'RS256');
+    const trimmed = privateJwkRaw.trim();
+    const key = trimmed.startsWith('-----BEGIN')
+      ? await importPKCS8(trimmed, 'RS256')
+      : await importJWK(JSON.parse(trimmed), 'RS256');
     const now = Math.floor(Date.now() / 1000);
     return new SignJWT({})
       .setProtectedHeader({ alg: 'RS256', kid })

@@ -68,7 +68,13 @@ export async function runAgentLoop(
   }
 
   // Real Claude loop
-  const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+  const clientOptions: ConstructorParameters<typeof Anthropic>[0] = {
+    apiKey: process.env.ANTHROPIC_API_KEY,
+  };
+  if (process.env.ANTHROPIC_BASE_URL) {
+    clientOptions.baseURL = process.env.ANTHROPIC_BASE_URL;
+  }
+  const client = new Anthropic(clientOptions);
   const tools = TOOL_DEFINITIONS.map(({ name, description, input_schema }) => ({
     name,
     description,

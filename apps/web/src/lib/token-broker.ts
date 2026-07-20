@@ -8,6 +8,7 @@ export interface TokenChainStage {
   tokenPreview: string;
   decoded?: { header: Record<string, unknown>; payload: Record<string, unknown> };
   expiresAt?: number;
+  durationMs?: number;
 }
 
 export interface BrokeredToken {
@@ -29,7 +30,7 @@ export class BrokerError extends Error {
   }
 }
 
-function decodeStage(token: string, stageName: string): TokenChainStage {
+function decodeStage(token: string, stageName: string, durationMs?: number): TokenChainStage {
   try {
     const parts = token.split('.');
     const header = JSON.parse(Buffer.from(parts[0], 'base64url').toString());
@@ -39,9 +40,10 @@ function decodeStage(token: string, stageName: string): TokenChainStage {
       tokenPreview: token.slice(0, 12) + '...',
       decoded: { header, payload },
       expiresAt: typeof payload.exp === 'number' ? payload.exp : undefined,
+      durationMs,
     };
   } catch {
-    return { stage: stageName, tokenPreview: token.slice(0, 12) + '...' };
+    return { stage: stageName, tokenPreview: token.slice(0, 12) + '...', durationMs };
   }
 }
 
@@ -92,6 +94,7 @@ async function brokerModeA(session: SessionData): Promise<BrokeredToken> {
   });
 
   let hop1Body: Record<string, unknown>;
+  const hop1Start = Date.now();
   try {
     hop1Body = await postForm(hop1Endpoint, hop1Params, {});
   } catch (e) {
@@ -106,7 +109,7 @@ async function brokerModeA(session: SessionData): Promise<BrokeredToken> {
   }
 
   const idJag = hop1Body.access_token as string;
-  chain.push(decodeStage(idJag, 'ID-JAG (identity assertion)'));
+  chain.push(decodeStage(idJag, 'ID-JAG (identity assertion)', Date.now() - hop1Start));
 
   // Hop 2: custom AS → agent access token
   const hop2Endpoint = `${org}/oauth2/default/v1/token`;
@@ -125,6 +128,7 @@ async function brokerModeA(session: SessionData): Promise<BrokeredToken> {
   });
 
   let hop2Body: Record<string, unknown>;
+  const hop2Start = Date.now();
   try {
     hop2Body = await postForm(hop2Endpoint, hop2Params, {});
   } catch (e) {
@@ -140,7 +144,7 @@ async function brokerModeA(session: SessionData): Promise<BrokeredToken> {
 
   const accessToken = hop2Body.access_token as string;
   const expiresIn = (hop2Body.expires_in as number) ?? 3600;
-  chain.push(decodeStage(accessToken, 'Agent access token (custom AS)'));
+  chain.push(decodeStage(accessToken, 'Agent access token (custom AS)', Date.now() - hop2Start));
 
   return {
     accessToken,
@@ -173,6 +177,7 @@ async function brokerModeObo(session: SessionData): Promise<BrokeredToken> {
   });
 
   let body: Record<string, unknown>;
+  const oboStart = Date.now();
   try {
     body = await postForm(endpoint, params, { Authorization: `Basic ${credentials}` });
   } catch (e) {
@@ -188,7 +193,7 @@ async function brokerModeObo(session: SessionData): Promise<BrokeredToken> {
 
   const accessToken = body.access_token as string;
   const expiresIn = (body.expires_in as number) ?? 3600;
-  chain.push(decodeStage(accessToken, 'Agent access token (delegated, custom AS)'));
+  chain.push(decodeStage(accessToken, 'Agent access token (delegated, custom AS)', Date.now() - oboStart));
 
   return {
     accessToken,

@@ -1,6 +1,8 @@
+'use server';
 import { getSessionUser } from '@/lib/session';
 import { ROLE_SCOPES } from '@benefits-agent/shared';
 import Link from 'next/link';
+import { StartDemoButton } from './StartDemoButton';
 
 const PERSONAS = [
   { name: 'Sarah Johnson', email: 'sarah.johnson@acmecorp.example', role: 'hr_admin', groups: ['HR-Admins', 'Employees'], note: 'Full access incl. salary, notes, audit' },
@@ -52,9 +54,11 @@ export default async function HomePage() {
               </div>
             </div>
             <div className="mt-4 flex gap-3">
-              <Link href="/chat" className="bg-blue-700 hover:bg-blue-600 text-white px-4 py-2 rounded text-sm transition-colors">Chat with Agent</Link>
-              <Link href="/inspector" className="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded text-sm transition-colors">Token Inspector</Link>
-              <Link href="/audit" className="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded text-sm transition-colors">Audit Log</Link>
+              <Link href="/chat" className="bg-blue-700 hover:bg-blue-600 text-white px-4 py-2 rounded text-sm transition-colors">Chat</Link>
+              <Link href="/flow" className="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded text-sm transition-colors">Token Flow</Link>
+              <Link href="/audit" className="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded text-sm transition-colors">Audit</Link>
+              <Link href="/story" className="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded text-sm transition-colors">Demo Guide</Link>
+              <StartDemoButton />
               <LogoutButton />
             </div>
           </div>

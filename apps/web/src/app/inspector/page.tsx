@@ -65,6 +65,12 @@ export default function InspectorPage() {
 
   return (
     <div className="max-w-4xl mx-auto p-6">
+      <div className="bg-blue-950 border border-blue-700 rounded p-3 mb-5 flex items-center justify-between gap-3">
+        <span className="text-blue-300 text-sm">The visual Token Flow Visualizer is available — see each hop annotated with endpoints, grant types, and tooltips.</span>
+        <Link href="/flow" className="bg-blue-700 hover:bg-blue-600 text-white px-3 py-1.5 rounded text-sm transition-colors whitespace-nowrap shrink-0">
+          Open Flow Visualizer →
+        </Link>
+      </div>
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-white font-bold text-xl">Token Inspector</h1>

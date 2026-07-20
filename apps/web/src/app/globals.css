@@ -2,6 +2,199 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ── Fonts ───────────────────────────────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&display=swap');
+
+/* ── Design tokens ───────────────────────────────────────────────────────── */
 :root {
-  --okta-blue: #0061f2;
+  /* Surfaces */
+  --bg-base:     #050c1b;
+  --bg-surface:  #091426;
+  --bg-elevated: #0d1d38;
+  --bg-hover:    #122444;
+
+  /* Borders */
+  --border-subtle:  #112040;
+  --border-default: #1a3460;
+  --border-strong:  #2a4f8a;
+
+  /* Accents */
+  --blue:   #3b82f6;
+  --blue-l: #60a5fa;
+  --cyan:   #22d3ee;
+  --cyan-l: #67e8f9;
+  --green:  #34d399;
+  --green-l:#6ee7b7;
+  --red:    #f87171;
+  --purple: #c084fc;
+  --amber:  #fbbf24;
+
+  /* Token stage colors */
+  --token-id:    #2563eb; /* ID token */
+  --token-jag:   #7c3aed; /* ID-JAG */
+  --token-agent: #059669; /* Agent access token */
+
+  /* Text */
+  --text-primary:   #e8f0fc;
+  --text-secondary: #7a9cc4;
+  --text-muted:     #3d5878;
+
+  /* Glows */
+  --glow-blue:   0 0 20px rgba(59,130,246,0.35), 0 0 40px rgba(59,130,246,0.15);
+  --glow-purple: 0 0 20px rgba(124,58,237,0.35), 0 0 40px rgba(124,58,237,0.15);
+  --glow-green:  0 0 20px rgba(5,150,105,0.35),  0 0 40px rgba(5,150,105,0.15);
+}
+
+/* ── Base ─────────────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background-color: var(--bg-base);
+  color: var(--text-primary);
+  font-family: 'DM Mono', 'Courier New', monospace;
+  font-size: 14px;
+  line-height: 1.6;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+
+  /* Dot-grid background */
+  background-image:
+    radial-gradient(circle at 50% 0%, rgba(59,130,246,0.08) 0%, transparent 60%),
+    radial-gradient(circle, rgba(26,52,96,0.6) 1px, transparent 1px);
+  background-size: 100% 100%, 28px 28px;
+}
+
+/* ── Typography ──────────────────────────────────────────────────────────── */
+.font-display {
+  font-family: 'Syne', system-ui, sans-serif;
+  letter-spacing: -0.02em;
+}
+
+h1, h2, h3 { font-family: 'Syne', system-ui, sans-serif; letter-spacing: -0.02em; }
+
+/* ── Scrollbar ───────────────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-surface); }
+::-webkit-scrollbar-thumb { background: var(--border-default); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--border-strong); }
+
+/* ── Token node glows ────────────────────────────────────────────────────── */
+.token-node-id    { box-shadow: var(--glow-blue);   border-color: var(--token-id); }
+.token-node-jag   { box-shadow: var(--glow-purple); border-color: var(--token-jag); }
+.token-node-agent { box-shadow: var(--glow-green);  border-color: var(--token-agent); }
+
+/* ── Animated flow connector ─────────────────────────────────────────────── */
+.flow-line {
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(59,130,246,0.6) 50%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: flow-pulse 2s ease-in-out infinite;
+}
+
+@keyframes flow-pulse {
+  0%   { background-position: -100% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* ── Status badge pulse ──────────────────────────────────────────────────── */
+.pulse-dot::before {
+  content: '';
+  display: inline-block;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--green);
+  margin-right: 6px;
+  animation: pulse 2s ease-in-out infinite;
+  vertical-align: middle;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.5; transform: scale(0.8); }
+}
+
+/* ── Allow/Deny badges ───────────────────────────────────────────────────── */
+.badge-allow {
+  background: rgba(52,211,153,0.12);
+  color: var(--green-l);
+  border: 1px solid rgba(52,211,153,0.25);
+}
+.badge-deny {
+  background: rgba(248,113,113,0.12);
+  color: var(--red);
+  border: 1px solid rgba(248,113,113,0.25);
+}
+
+/* ── Card ─────────────────────────────────────────────────────────────────── */
+.card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+}
+.card-elevated {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-default);
+  border-radius: 12px;
+}
+
+/* ── Input ────────────────────────────────────────────────────────────────── */
+.input-field {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-default);
+  color: var(--text-primary);
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-family: inherit;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+.input-field:focus { border-color: var(--blue); }
+.input-field::placeholder { color: var(--text-muted); }
+
+/* ── Buttons ─────────────────────────────────────────────────────────────── */
+.btn-primary {
+  background: var(--blue);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 9px 18px;
+  font-family: 'DM Mono', monospace;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+}
+.btn-primary:hover   { background: var(--blue-l); }
+.btn-primary:active  { transform: scale(0.98); }
+.btn-primary:disabled { opacity: 0.45; cursor: not-allowed; }
+
+.btn-ghost {
+  background: var(--bg-elevated);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-default);
+  border-radius: 8px;
+  padding: 9px 18px;
+  font-family: 'DM Mono', monospace;
+  font-size: 13px;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+}
+.btn-ghost:hover { border-color: var(--border-strong); color: var(--text-primary); }
+.btn-ghost:disabled { opacity: 0.45; cursor: not-allowed; }
+
+/* ── Scope chip ──────────────────────────────────────────────────────────── */
+.scope-chip {
+  display: inline-block;
+  background: rgba(34,211,238,0.08);
+  border: 1px solid rgba(34,211,238,0.2);
+  color: var(--cyan-l);
+  border-radius: 4px;
+  padding: 2px 8px;
+  font-size: 11px;
+  font-family: 'DM Mono', monospace;
 }

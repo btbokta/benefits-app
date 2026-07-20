@@ -133,62 +133,68 @@ function TokenNode({
   const allPayload = Object.entries(stage.decoded?.payload ?? {});
   const allHeader = Object.entries(stage.decoded?.header ?? {});
 
-  const nodeColors = [
-    'border-blue-700 bg-blue-950/30',
-    'border-purple-700 bg-purple-950/30',
-    'border-green-700 bg-green-950/30',
+  const nodeClasses = ['token-node-id', 'token-node-jag', 'token-node-agent'];
+  const nodeStyles = [
+    { background: 'rgba(37,99,235,0.08)' },
+    { background: 'rgba(109,40,217,0.08)' },
+    { background: 'rgba(5,150,105,0.08)' },
   ];
-  const badgeColors = ['bg-blue-900 text-blue-300', 'bg-purple-900 text-purple-300', 'bg-green-900 text-green-300'];
+  const badgeStyles = [
+    { background: 'rgba(37,99,235,0.2)', color: '#93c5fd', border: '1px solid rgba(37,99,235,0.4)' },
+    { background: 'rgba(109,40,217,0.2)', color: '#c4b5fd', border: '1px solid rgba(109,40,217,0.4)' },
+    { background: 'rgba(5,150,105,0.2)', color: '#6ee7b7', border: '1px solid rgba(5,150,105,0.4)' },
+  ];
 
   return (
-    <div id={id} className={`rounded-lg border ${nodeColors[index] ?? 'border-gray-700 bg-gray-900'} p-4 w-full max-w-sm`}>
+    <div id={id} className={nodeClasses[index] ?? ''} style={{
+      ...(nodeStyles[index] ?? {}),
+      borderRadius: 12,
+      border: '1px solid',
+      padding: 16,
+      width: '100%',
+      maxWidth: 300,
+      transition: 'box-shadow 0.3s',
+    }}>
       {/* Header */}
-      <div className="flex items-start justify-between gap-2 mb-3">
-        <div className="flex items-center gap-2">
-          <span className={`text-xs font-bold px-2 py-0.5 rounded ${badgeColors[index] ?? 'bg-gray-800 text-gray-300'}`}>
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8, marginBottom: 12 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <span style={{ ...(badgeStyles[index] ?? {}), fontSize: 11, fontWeight: 700, padding: '2px 8px', borderRadius: 4, fontFamily: 'DM Mono, monospace' }}>
             {index + 1}
           </span>
-          <span className="text-white text-sm font-medium leading-tight">{stage.stage}</span>
+          <span style={{ color: 'var(--text-primary)', fontSize: 13, fontFamily: 'Syne, sans-serif', fontWeight: 600, lineHeight: 1.2 }}>{stage.stage}</span>
         </div>
-        <div className="text-right shrink-0">
-          <div className="font-mono text-xs text-gray-500">{stage.tokenPreview}</div>
+        <div style={{ textAlign: 'right', flexShrink: 0 }}>
+          <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 10, color: 'var(--text-muted)' }}>{stage.tokenPreview}</div>
           {stage.expiresAt && (
-            <div className="text-xs text-yellow-400 mt-0.5">{ttl(stage.expiresAt, now)}</div>
+            <div style={{ fontSize: 10, color: 'var(--amber)', marginTop: 2 }}>{ttl(stage.expiresAt, now)}</div>
           )}
           {stage.durationMs !== undefined && (
-            <div className="text-xs text-gray-500 mt-0.5">{stage.durationMs}ms</div>
+            <div style={{ fontSize: 10, color: 'var(--text-muted)', marginTop: 2 }}>{stage.durationMs}ms</div>
           )}
         </div>
       </div>
 
       {/* Key claims */}
       {keyPayload.length > 0 && (
-        <div className="bg-gray-950/50 rounded p-2 mb-2 space-y-0.5">
+        <div style={{ background: 'rgba(5,12,27,0.5)', borderRadius: 6, padding: '8px 10px', marginBottom: 8 }}>
           {keyPayload.map(([k, v]) => <ClaimRow key={k} k={k} v={v} />)}
         </div>
       )}
 
       {/* Expand toggle */}
-      <button
-        onClick={onToggle}
-        className="text-xs text-gray-500 hover:text-gray-300 transition-colors"
-      >
-        {expanded ? '▲ Hide full payload' : '▼ Show full payload'}
+      <button onClick={onToggle} style={{ fontSize: 11, color: 'var(--text-muted)', background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontFamily: 'DM Mono, monospace' }}>
+        {expanded ? '▲ hide full payload' : '▼ show full payload'}
       </button>
 
       {expanded && (
-        <div className="mt-2 space-y-2">
-          <div className="bg-gray-950/70 rounded p-2">
-            <div className="text-xs text-gray-500 uppercase tracking-wider mb-1">Header</div>
-            <div className="space-y-0.5">
-              {allHeader.map(([k, v]) => <ClaimRow key={k} k={k} v={v} />)}
-            </div>
+        <div style={{ marginTop: 10, display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <div style={{ background: 'rgba(5,12,27,0.7)', borderRadius: 6, padding: '8px 10px' }}>
+            <div style={{ fontSize: 10, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>Header</div>
+            {allHeader.map(([k, v]) => <ClaimRow key={k} k={k} v={v} />)}
           </div>
-          <div className="bg-gray-950/70 rounded p-2">
-            <div className="text-xs text-gray-500 uppercase tracking-wider mb-1">Full Payload</div>
-            <div className="space-y-0.5">
-              {allPayload.map(([k, v]) => <ClaimRow key={k} k={k} v={v} />)}
-            </div>
+          <div style={{ background: 'rgba(5,12,27,0.7)', borderRadius: 6, padding: '8px 10px' }}>
+            <div style={{ fontSize: 10, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>Full Payload</div>
+            {allPayload.map(([k, v]) => <ClaimRow key={k} k={k} v={v} />)}
           </div>
         </div>
       )}
@@ -272,7 +278,7 @@ export default function FlowPage() {
   const hops = state?.mode === 'obo' ? HOP_META.modeC : HOP_META.modeA;
 
   // Scope transformation data
-  const idTokenPayload = state?.chain[0]?.decoded?.payload ?? {};
+  const idTokenPayload = state?.chain?.[0]?.decoded?.payload ?? {};
   const userGroups = Array.isArray(idTokenPayload.groups) ? (idTokenPayload.groups as string[]) : [];
   const agentScopes = state?.scope?.split(' ').filter(Boolean) ?? [];
 

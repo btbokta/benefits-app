@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Token Flow Visualizer | Secured by Okta for AI</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700&amp;family=JetBrains+Mono:wght@500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .hex-grid {
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0l25.98 15v30L30 60 4.02 45V15z' fill-opacity='0.03' fill='%23c3c6d2' fill-rule='evenodd' stroke='%23c3c6d2' stroke-width='0.5' stroke-opacity='0.05'/%3E%3C/svg%3E");
+        }
+        @keyframes pulse-glow {
+            0%, 100% { filter: drop-shadow(0 0 8px currentColor) opacity(0.8); }
+            50% { filter: drop-shadow(0 0 20px currentColor) opacity(1); }
+        }
+        .animate-pulse-glow {
+            animation: pulse-glow 3s infinite ease-in-out;
+        }
+        .flow-line {
+            stroke-dasharray: 10;
+            animation: dash 20s linear infinite;
+        }
+        @keyframes dash {
+            to { stroke-dashoffset: -1000; }
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface-container-highest": "#353435",
+                      "status-allow": "#10b981",
+                      "on-primary-fixed": "#181c24",
+                      "primary-fixed": "#e0e2ee",
+                      "on-tertiary": "#3c2e21",
+                      "tertiary-fixed": "#f6decc",
+                      "on-tertiary-container": "#887565",
+                      "surface-container-low": "#1c1b1c",
+                      "primary-container": "#050810",
+                      "surface-tint": "#c3c6d2",
+                      "on-surface": "#e5e2e2",
+                      "on-surface-variant": "#c6c6cc",
+                      "status-deny": "#ef4444",
+                      "on-error": "#690005",
+                      "surface-container-high": "#2a2a2a",
+                      "secondary-container": "#41495f",
+                      "token-id": "#3b82f6",
+                      "surface-bright": "#3a393a",
+                      "persona-manager": "#a855f7",
+                      "surface-container": "#201f20",
+                      "on-secondary": "#283045",
+                      "primary-fixed-dim": "#c3c6d2",
+                      "tertiary-fixed-dim": "#d9c2b0",
+                      "on-primary": "#2d303a",
+                      "background": "#131314",
+                      "on-background": "#e5e2e2",
+                      "inverse-primary": "#5b5e69",
+                      "surface": "#131314",
+                      "error": "#ffb4ab",
+                      "outline": "#909096",
+                      "secondary": "#bec6e1",
+                      "on-primary-fixed-variant": "#434751",
+                      "on-error-container": "#ffdad6",
+                      "on-primary-container": "#757883",
+                      "on-secondary-fixed": "#131b2f",
+                      "persona-specialist": "#22d3ee",
+                      "token-agent": "#10b981",
+                      "tertiary": "#d9c2b0",
+                      "error-container": "#93000a",
+                      "secondary-fixed-dim": "#bec6e1",
+                      "surface-dim": "#131314",
+                      "on-tertiary-fixed-variant": "#534436",
+                      "surface-variant": "#353435",
+                      "on-secondary-container": "#b0b8d2",
+                      "surface-container-lowest": "#0e0e0f",
+                      "persona-employee": "#22c55e",
+                      "outline-variant": "#45464b",
+                      "inverse-on-surface": "#313031",
+                      "primary": "#c3c6d2",
+                      "data-highlight": "#facc15",
+                      "on-tertiary-fixed": "#25190e",
+                      "secondary-fixed": "#dae2fe",
+                      "persona-hr": "#fbbf24",
+                      "on-secondary-fixed-variant": "#3f465c",
+                      "inverse-surface": "#e5e2e2",
+                      "token-id-jag": "#8b5cf6",
+                      "tertiary-container": "#0f0601",
+                      "technical-cyan": "#22d3ee"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "margin-page": "40px",
+                      "gutter": "24px",
+                      "stack-lg": "32px",
+                      "stack-sm": "8px",
+                      "stack-md": "16px",
+                      "container-max": "1280px"
+              },
+              "fontFamily": {
+                      "display-lg": ["DM Sans"],
+                      "headline-md": ["DM Sans"],
+                      "body-md": ["DM Sans"],
+                      "code-sm": ["JetBrains Mono"],
+                      "label-caps": ["JetBrains Mono"]
+              },
+              "fontSize": {
+                      "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                      "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                      "code-sm": ["13px", {"lineHeight": "20px", "fontWeight": "500"}],
+                      "label-caps": ["11px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}]
+              }
+            },
+          },
+        }
+    </script>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen hex-grid">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-md border-b border-outline-variant/30 flex justify-between items-center px-margin-page h-20">
+<div class="font-display-lg text-display-lg font-bold text-primary tracking-tighter">Secured by Okta for AI</div>
+<nav class="hidden md:flex gap-gutter">
+<a class="text-on-surface-variant font-medium hover:text-primary transition-colors duration-200" href="#">Dashboard</a>
+<a class="text-primary font-bold border-b-2 border-primary pb-1" href="#">Flows</a>
+<a class="text-on-surface-variant font-medium hover:text-primary transition-colors duration-200" href="#">Authorization Traces</a>
+<a class="text-on-surface-variant font-medium hover:text-primary transition-colors duration-200" href="#">Persona Manager</a>
+<a class="text-on-surface-variant font-medium hover:text-primary transition-colors duration-200" href="#">JWT Decoder</a>
+</nav>
+<div class="flex items-center gap-stack-md">
+<button class="bg-primary text-on-primary font-bold py-2 px-4 rounded-lg hover:opacity-80 transition-all active:scale-95">Run Scan</button>
+<div class="w-10 h-10 rounded-full border border-outline-variant/50 overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Professional security specialist profile portrait, wearing tactical tech-wear, subtle blue lighting on the face, high-contrast cinematic digital photography style, background with blurred server rack lights, representative of a level 4 operator role in a high-security cyber defense environment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA-IVeFtINrZB1OAt6U2AOy0Oe6B729CjgzgDA0akfqyI4Fa1hrPGELAkKQAMD2Cx-05fGPMaUk4tCnyA2n6ZTjblBuDYKYoup3vnFoDJJzaClbUYjvLMJv33wqB9u4MVa8dFSuFmmagnt9CloJwQj1-SviXdUpgpdu8zneupOJSzlyFuQfD_1OoBwutaD32lqhdxU37T83msw7tPX4sKYsOsJOsZjZwSkkpw8X8EIMz2vv9CR74cvE6NXuazSgDxvdE_VNMCaLQQo"/>
+</div>
+</div>
+</header>
+<!-- SideNavBar -->
+<aside class="h-screen w-64 fixed left-0 top-0 border-r border-outline-variant/30 bg-surface-container-low shadow-xl flex flex-col py-stack-lg z-40 hidden lg:flex">
+<div class="px-6 mb-10">
+<div class="flex items-center gap-stack-sm mb-2">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">security</span>
+<span class="text-primary font-bold font-label-caps">Operator Console</span>
+</div>
+<div class="text-on-surface-variant opacity-60 text-xs uppercase tracking-widest font-label-caps">Level 4 Access</div>
+</div>
+<nav class="flex flex-col gap-2">
+<div class="text-on-surface-variant hover:bg-surface-container-high transition-all mx-2 p-3 rounded-lg flex items-center gap-4 cursor-pointer">
+<span class="material-symbols-outlined">shield_person</span>
+<span class="font-label-caps text-label-caps">Identity</span>
+</div>
+<div class="bg-secondary-container text-on-secondary-container rounded-lg mx-2 p-3 flex items-center gap-4 cursor-pointer">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">account_tree</span>
+<span class="font-label-caps text-label-caps">Flows</span>
+</div>
+<div class="text-on-surface-variant hover:bg-surface-container-high transition-all mx-2 p-3 rounded-lg flex items-center gap-4 cursor-pointer">
+<span class="material-symbols-outlined">list_alt</span>
+<span class="font-label-caps text-label-caps">Traces</span>
+</div>
+<div class="text-on-surface-variant hover:bg-surface-container-high transition-all mx-2 p-3 rounded-lg flex items-center gap-4 cursor-pointer">
+<span class="material-symbols-outlined">terminal</span>
+<span class="font-label-caps text-label-caps">Logs</span>
+</div>
+</nav>
+</aside>
+<main class="lg:ml-64 pt-24 pb-stack-lg px-margin-page">
+<!-- Hero Header -->
+<section class="mb-stack-lg">
+<h1 class="font-display-lg text-display-lg text-on-background mb-stack-sm">Token Flow Visualizer</h1>
+<p class="text-on-surface-variant max-w-2xl font-body-md">Analyze the cryptographically secured signal path between the primary identity, the Just-in-Time access gateway, and the final agent execution environment.</p>
+</section>
+<!-- Visualization Canvas -->
+<div class="relative min-h-[500px] w-full bg-surface-container-lowest/50 rounded-xl border border-outline-variant/20 p-stack-lg flex items-center justify-between overflow-hidden">
+<!-- Flow SVG Lines -->
+<svg class="absolute inset-0 w-full h-full pointer-events-none" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<lineargradient id="grad1" x1="0%" x2="100%" y1="0%" y2="0%">
+<stop offset="0%" stop-color="#3b82f6"></stop>
+<stop offset="100%" stop-color="#8b5cf6"></stop>
+</lineargradient>
+<lineargradient id="grad2" x1="0%" x2="100%" y1="0%" y2="0%">
+<stop offset="0%" stop-color="#8b5cf6"></stop>
+<stop offset="100%" stop-color="#10b981"></stop>
+</lineargradient>
+</defs>
+<!-- Line 1 -->
+<path class="flow-line" d="M200 250 L450 250" fill="none" stroke="url(#grad1)" stroke-width="2"></path>
+<!-- Line 2 -->
+<path class="flow-line" d="M550 250 L800 250" fill="none" stroke="url(#grad2)" stroke-width="2"></path>
+<!-- Connection Labels -->
+<text class="uppercase tracking-tighter" fill="#c6c6cc" font-family="JetBrains Mono" font-size="10" x="250" y="235">Hop 1 — token-exchange → id-jag</text>
+<text class="uppercase tracking-tighter" fill="#c6c6cc" font-family="JetBrains Mono" font-size="10" x="600" y="235">Hop 2 — jwt-bearer → access token</text>
+</svg>
+<!-- Node 1: ID Token -->
+<div class="relative z-10 flex flex-col items-center gap-stack-md group w-1/4">
+<div class="w-32 h-32 rounded-full border-2 border-token-id/50 flex items-center justify-center bg-token-id/5 text-token-id animate-pulse-glow transition-all duration-500 cursor-pointer hover:scale-110 active:scale-95" onclick="toggleJWT('jwt1')">
+<span class="material-symbols-outlined text-5xl" style="font-variation-settings: 'FILL' 1;">fingerprint</span>
+</div>
+<div class="text-center">
+<div class="font-label-caps text-label-caps text-token-id tracking-widest">ORIGIN</div>
+<div class="font-headline-md text-headline-md text-on-background">ID Token</div>
+</div>
+<!-- JWT Claims Panel -->
+<div class="hidden absolute top-40 w-64 bg-surface-container-high border border-outline-variant/40 rounded-lg p-4 shadow-2xl backdrop-blur-xl z-20" id="jwt1">
+<div class="flex justify-between items-center mb-2 border-b border-outline-variant/20 pb-1">
+<span class="font-label-caps text-[9px] text-on-surface-variant">DECODED JWT</span>
+<span class="material-symbols-outlined text-sm cursor-pointer" onclick="toggleJWT('jwt1')">close</span>
+</div>
+<pre class="font-code-sm text-code-sm leading-relaxed overflow-x-auto">{
+  "<span class="text-data-highlight">sub</span>": "usr_9281",
+  "iss": "okta.auth.v1",
+  "<span class="text-data-highlight">cid</span>": "client_alpha",
+  "iat": 17154320,
+  "exp": 17158320
+}
+                    </pre>
+</div>
+</div>
+<!-- Node 2: ID-JAG -->
+<div class="relative z-10 flex flex-col items-center gap-stack-md group w-1/4">
+<div class="w-32 h-32 rounded-full border-2 border-token-id-jag/50 flex items-center justify-center bg-token-id-jag/5 text-token-id-jag animate-pulse-glow transition-all duration-500 cursor-pointer hover:scale-110 active:scale-95" onclick="toggleJWT('jwt2')" style="animation-delay: 0.5s">
+<span class="material-symbols-outlined text-5xl" style="font-variation-settings: 'FILL' 1;">hub</span>
+</div>
+<div class="text-center">
+<div class="font-label-caps text-label-caps text-token-id-jag tracking-widest">BRIDGE</div>
+<div class="font-headline-md text-headline-md text-on-background">ID-JAG</div>
+</div>
+<!-- JWT Claims Panel -->
+<div class="hidden absolute top-40 w-64 bg-surface-container-high border border-outline-variant/40 rounded-lg p-4 shadow-2xl backdrop-blur-xl z-20" id="jwt2">
+<div class="flex justify-between items-center mb-2 border-b border-outline-variant/20 pb-1">
+<span class="font-label-caps text-[9px] text-on-surface-variant">DECODED JWT</span>
+<span class="material-symbols-outlined text-sm cursor-pointer" onclick="toggleJWT('jwt2')">close</span>
+</div>
+<pre class="font-code-sm text-code-sm leading-relaxed">{
+  "<span class="text-data-highlight">sub</span>": "usr_9281",
+  "<span class="text-data-highlight">jti</span>": "jag_9921_x",
+  "aud": "ai_agent_v2",
+  "act": {
+    "sub": "agent_service"
+  }
+}
+                    </pre>
+</div>
+</div>
+<!-- Node 3: Agent Access Token -->
+<div class="relative z-10 flex flex-col items-center gap-stack-md group w-1/4">
+<div class="w-32 h-32 rounded-full border-2 border-token-agent/50 flex items-center justify-center bg-token-agent/5 text-token-agent animate-pulse-glow transition-all duration-500 cursor-pointer hover:scale-110 active:scale-95" onclick="toggleJWT('jwt3')" style="animation-delay: 1s">
+<span class="material-symbols-outlined text-5xl" style="font-variation-settings: 'FILL' 1;">smart_toy</span>
+</div>
+<div class="text-center">
+<div class="font-label-caps text-label-caps text-token-agent tracking-widest">EXECUTION</div>
+<div class="font-headline-md text-headline-md text-on-background">Agent Access</div>
+</div>
+<!-- JWT Claims Panel -->
+<div class="hidden absolute top-40 w-64 bg-surface-container-high border border-outline-variant/40 rounded-lg p-4 shadow-2xl backdrop-blur-xl z-20" id="jwt3">
+<div class="flex justify-between items-center mb-2 border-b border-outline-variant/20 pb-1">
+<span class="font-label-caps text-[9px] text-on-surface-variant">DECODED JWT</span>
+<span class="material-symbols-outlined text-sm cursor-pointer" onclick="toggleJWT('jwt3')">close</span>
+</div>
+<pre class="font-code-sm text-code-sm leading-relaxed">{
+  "<span class="text-data-highlight">sub</span>": "agent_svc_1",
+  "<span class="text-data-highlight">scp</span>": ["read:logs", "exec:sql"],
+  "cid": "ai_runtime_6",
+  "exp": 17158320
+}
+                    </pre>
+</div>
+</div>
+</div>
+<!-- Scope Transformation Section -->
+<section class="mt-stack-lg">
+<div class="bg-surface-container-low border border-outline-variant/30 rounded-xl overflow-hidden shadow-2xl">
+<div class="p-6 border-b border-outline-variant/20 flex justify-between items-center">
+<div>
+<h2 class="font-headline-md text-headline-md text-on-background">Scope Transformation</h2>
+<p class="text-on-surface-variant font-body-md text-sm">Policy mapping during JWT translation across the secure bridge.</p>
+</div>
+<div class="flex items-center gap-2 bg-surface-container-highest px-3 py-1 rounded-full border border-outline-variant/30">
+<span class="w-2 h-2 rounded-full bg-status-allow animate-pulse"></span>
+<span class="font-label-caps text-[10px] text-on-surface">SIGNAL ACTIVE</span>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 divide-x divide-outline-variant/20">
+<!-- Column 1: User Role Scope -->
+<div class="p-8">
+<div class="flex items-center gap-3 mb-6">
+<div class="w-10 h-10 rounded-lg bg-token-id/20 text-token-id flex items-center justify-center">
+<span class="material-symbols-outlined">person</span>
+</div>
+<div>
+<div class="font-label-caps text-[10px] text-on-surface-variant">SOURCE</div>
+<div class="font-body-md font-bold text-on-surface">User Role Scope</div>
+</div>
+</div>
+<div class="space-y-3">
+<div class="flex justify-between items-center p-3 rounded bg-surface-container/50 border border-outline-variant/10">
+<code class="font-code-sm text-code-sm text-on-surface">openid profile email</code>
+<span class="material-symbols-outlined text-status-allow text-sm">check_circle</span>
+</div>
+<div class="flex justify-between items-center p-3 rounded bg-surface-container/50 border border-outline-variant/10">
+<code class="font-code-sm text-code-sm text-on-surface">groups:admin</code>
+<span class="material-symbols-outlined text-status-allow text-sm">check_circle</span>
+</div>
+<div class="flex justify-between items-center p-3 rounded bg-surface-container/50 border border-outline-variant/10 opacity-40">
+<code class="font-code-sm text-code-sm text-on-surface">api:write</code>
+<span class="material-symbols-outlined text-on-surface-variant text-sm">block</span>
+</div>
+</div>
+</div>
+<!-- Column 2: Agent Received Scopes -->
+<div class="p-8 bg-token-agent/5">
+<div class="flex items-center gap-3 mb-6">
+<div class="w-10 h-10 rounded-lg bg-token-agent/20 text-token-agent flex items-center justify-center">
+<span class="material-symbols-outlined">shield_with_heart</span>
+</div>
+<div>
+<div class="font-label-caps text-[10px] text-on-surface-variant">DESTINATION</div>
+<div class="font-body-md font-bold text-on-surface">Agent Received Scopes</div>
+</div>
+</div>
+<div class="space-y-3">
+<div class="flex justify-between items-center p-3 rounded bg-token-agent/10 border border-token-agent/20">
+<div class="flex items-center gap-2">
+<span class="w-1 h-1 rounded-full bg-token-agent"></span>
+<code class="font-code-sm text-code-sm text-on-surface">read:user_profile</code>
+</div>
+<span class="font-label-caps text-[9px] text-token-agent">MAPPED</span>
+</div>
+<div class="flex justify-between items-center p-3 rounded bg-token-agent/10 border border-token-agent/20">
+<div class="flex items-center gap-2">
+<span class="w-1 h-1 rounded-full bg-token-agent"></span>
+<code class="font-code-sm text-code-sm text-on-surface">exec:read_logs</code>
+</div>
+<span class="font-label-caps text-[9px] text-token-agent">TRANSFORMED</span>
+</div>
+<div class="flex justify-between items-center p-3 rounded bg-token-agent/10 border border-token-agent/20">
+<div class="flex items-center gap-2">
+<span class="w-1 h-1 rounded-full bg-token-agent"></span>
+<code class="font-code-sm text-code-sm text-on-surface">auth:delegate_session</code>
+</div>
+<span class="font-label-caps text-[9px] text-token-agent">SYNTHESIZED</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="lg:ml-64 bg-surface-container-lowest border-t border-outline-variant/20 w-full py-stack-md px-margin-page flex flex-col md:flex-row justify-between items-center gap-stack-md mt-auto">
+<div class="font-label-caps text-label-caps text-primary">Signal Intelligence Ops v2.4.0</div>
+<div class="flex gap-stack-lg">
+<a class="font-code-sm text-code-sm text-on-surface-variant hover:text-primary transition-all" href="#">Documentation</a>
+<a class="font-code-sm text-code-sm text-on-surface-variant hover:text-primary transition-all" href="#">Security Policy</a>
+<a class="font-code-sm text-code-sm text-on-surface-variant hover:text-primary transition-all" href="#">API Reference</a>
+</div>
+<div class="text-on-surface-variant font-code-sm text-code-sm opacity-50">© 2024 Secured Systems Inc.</div>
+</footer>
+<script>
+        function toggleJWT(id) {
+            const el = document.getElementById(id);
+            // Close all others first
+            const panels = ['jwt1', 'jwt2', 'jwt3'];
+            panels.forEach(p => {
+                if(p !== id) document.getElementById(p).classList.add('hidden');
+            });
+            el.classList.toggle('hidden');
+        }
+
+        // Pulse interaction for visualization nodes
+        document.querySelectorAll('.animate-pulse-glow').forEach(node => {
+            node.addEventListener('mouseenter', () => {
+                node.style.transform = 'scale(1.1)';
+            });
+            node.addEventListener('mouseleave', () => {
+                node.style.transform = 'scale(1)';
+            });
+        });
+    </script>
+</body></html>

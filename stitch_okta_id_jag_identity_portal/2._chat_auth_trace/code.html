@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Secured by Okta for AI - Operations Console</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        body {
+            background-color: #131314;
+            background-image: 
+                radial-gradient(circle at 2px 2px, rgba(255,255,255,0.02) 1px, transparent 0);
+            background-size: 32px 32px;
+            color: #e5e2e2;
+            overflow: hidden;
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        .glass-panel {
+            background: rgba(28, 27, 28, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(69, 70, 75, 0.3);
+        }
+
+        .trace-stream-container::-webkit-scrollbar {
+            width: 4px;
+        }
+        .trace-stream-container::-webkit-scrollbar-thumb {
+            background: rgba(144, 144, 150, 0.2);
+            border-radius: 10px;
+        }
+
+        @keyframes pulse-glow {
+            0% { box-shadow: 0 0 0px rgba(34, 211, 238, 0); }
+            50% { box-shadow: 0 0 15px rgba(34, 211, 238, 0.2); }
+            100% { box-shadow: 0 0 0px rgba(34, 211, 238, 0); }
+        }
+
+        .active-trace {
+            animation: pulse-glow 2s infinite;
+        }
+
+        .scanline {
+            width: 100%;
+            height: 100px;
+            z-index: 10;
+            background: linear-gradient(0deg, rgba(34, 211, 238, 0) 0%, rgba(34, 211, 238, 0.05) 50%, rgba(34, 211, 238, 0) 100%);
+            opacity: 0.1;
+            position: absolute;
+            pointer-events: none;
+            animation: scanline 8s linear infinite;
+        }
+
+        @keyframes scanline {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(100vh); }
+        }
+    </style>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-container-highest": "#353435",
+                    "status-allow": "#10b981",
+                    "on-primary-fixed": "#181c24",
+                    "primary-fixed": "#e0e2ee",
+                    "on-tertiary": "#3c2e21",
+                    "tertiary-fixed": "#f6decc",
+                    "on-tertiary-container": "#887565",
+                    "surface-container-low": "#1c1b1c",
+                    "primary-container": "#050810",
+                    "surface-tint": "#c3c6d2",
+                    "on-surface": "#e5e2e2",
+                    "on-surface-variant": "#c6c6cc",
+                    "status-deny": "#ef4444",
+                    "on-error": "#690005",
+                    "surface-container-high": "#2a2a2a",
+                    "secondary-container": "#41495f",
+                    "token-id": "#3b82f6",
+                    "surface-bright": "#3a393a",
+                    "persona-manager": "#a855f7",
+                    "surface-container": "#201f20",
+                    "on-secondary": "#283045",
+                    "primary-fixed-dim": "#c3c6d2",
+                    "tertiary-fixed-dim": "#d9c2b0",
+                    "on-primary": "#2d303a",
+                    "background": "#131314",
+                    "on-background": "#e5e2e2",
+                    "inverse-primary": "#5b5e69",
+                    "surface": "#131314",
+                    "error": "#ffb4ab",
+                    "outline": "#909096",
+                    "secondary": "#bec6e1",
+                    "on-primary-fixed-variant": "#434751",
+                    "on-error-container": "#ffdad6",
+                    "on-primary-container": "#757883",
+                    "on-secondary-fixed": "#131b2f",
+                    "persona-specialist": "#22d3ee",
+                    "token-agent": "#10b981",
+                    "tertiary": "#d9c2b0",
+                    "error-container": "#93000a",
+                    "secondary-fixed-dim": "#bec6e1",
+                    "surface-dim": "#131314",
+                    "on-tertiary-fixed-variant": "#534436",
+                    "surface-variant": "#353435",
+                    "on-secondary-container": "#b0b8d2",
+                    "surface-container-lowest": "#0e0e0f",
+                    "persona-employee": "#22c55e",
+                    "outline-variant": "#45464b",
+                    "inverse-on-surface": "#313031",
+                    "primary": "#c3c6d2",
+                    "data-highlight": "#facc15",
+                    "on-tertiary-fixed": "#25190e",
+                    "secondary-fixed": "#dae2fe",
+                    "persona-hr": "#fbbf24",
+                    "on-secondary-fixed-variant": "#3f465c",
+                    "inverse-surface": "#e5e2e2",
+                    "token-id-jag": "#8b5cf6",
+                    "tertiary-container": "#0f0601",
+                    "technical-cyan": "#22d3ee"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "margin-page": "40px",
+                    "gutter": "24px",
+                    "stack-lg": "32px",
+                    "stack-sm": "8px",
+                    "stack-md": "16px",
+                    "container-max": "1280px"
+            },
+            "fontFamily": {
+                    "display-lg": ["DM Sans"],
+                    "headline-md": ["DM Sans"],
+                    "body-md": ["DM Sans"],
+                    "code-sm": ["JetBrains Mono"],
+                    "label-caps": ["JetBrains Mono"]
+            },
+            "fontSize": {
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "code-sm": ["13px", {"lineHeight": "20px", "fontWeight": "500"}],
+                    "label-caps": ["11px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+</head>
+<body class="antialiased">
+<!-- Top Navigation Bar -->
+<header class="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-md border-b border-outline-variant/30 h-20 flex justify-between items-center px-margin-page">
+<div class="flex items-center gap-stack-md">
+<span class="font-display-lg text-display-lg font-bold text-primary tracking-tighter">Secured by Okta for AI</span>
+</div>
+<nav class="hidden md:flex items-center gap-gutter">
+<a class="text-on-surface-variant font-medium hover:text-primary transition-colors duration-200 font-body-md text-body-md" href="#">Dashboard</a>
+<a class="text-primary font-bold border-b-2 border-primary pb-1 font-body-md text-body-md" href="#">Authorization Traces</a>
+<a class="text-on-surface-variant font-medium hover:text-primary transition-colors duration-200 font-body-md text-body-md" href="#">Persona Manager</a>
+<a class="text-on-surface-variant font-medium hover:text-primary transition-colors duration-200 font-body-md text-body-md" href="#">JWT Decoder</a>
+</nav>
+<div class="flex items-center gap-stack-md">
+<button class="px-stack-md py-2 bg-primary-container border border-technical-cyan text-technical-cyan rounded font-label-caps text-label-caps hover:bg-technical-cyan/10 transition-all">
+                Run Scan
+            </button>
+<div class="w-10 h-10 rounded-full border border-outline-variant overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A professional security analyst profile picture, minimalist lighting, deep navy studio background, wearing a modern tech uniform, neutral authoritative expression, sharp focus, technical atmosphere." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBYxDZRy7TzY5OTlSk3SlrQdxQZ1G4drnKKGZEf0SVA-s5xeWCGorJkDNB8hM1ck7-yZVF6HQ6GpuCb-m7-SYx8SQftzI7AvBHai5mwN1nXweul3CevSzF5Nr3wgvwxnMu2VUxbKmNdlinMQ3iP6uF92riiHCB15U_5yyN4vzft4U5jUZo5ehkHFxpHTHdJb31SkjunSsnTm9pEQfAsijIg2ZdfmgNzPzjWzKUAc13G1xp7xmM0ZTW13Dt4wb0uUqKSzs4s_I63ir8"/>
+</div>
+</div>
+</header>
+<div class="scanline"></div>
+<!-- Main Content Area -->
+<main class="pt-20 h-screen w-full flex flex-row overflow-hidden">
+<!-- Left: Chat Interface (40%) -->
+<section class="w-[40%] flex flex-col border-r border-outline-variant/20 bg-surface-container-lowest/50">
+<!-- Chat Header -->
+<div class="p-stack-md border-b border-outline-variant/10 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-2 h-2 rounded-full bg-status-allow shadow-[0_0_8px_#10b981]"></div>
+<span class="font-label-caps text-label-caps text-on-surface">AGENT_SIGMA ACTIVE</span>
+</div>
+<span class="font-code-sm text-code-sm text-on-surface-variant">ID: 882-QX-4</span>
+</div>
+<!-- Messages Area -->
+<div class="flex-1 overflow-y-auto p-stack-lg space-y-stack-lg">
+<div class="flex flex-col gap-2 max-w-[85%]">
+<span class="font-label-caps text-[10px] text-technical-cyan">AGENT_SIGMA</span>
+<div class="p-stack-md glass-panel rounded-xl rounded-tl-none border-l-2 border-l-technical-cyan">
+<p class="font-body-md text-body-md text-on-surface">Hello Specialist. I've detected a request for sensitive payroll data from the Finance-App service. Should I proceed with the tool call?</p>
+</div>
+</div>
+<div class="flex flex-col gap-2 items-end ml-auto max-w-[85%]">
+<span class="font-label-caps text-[10px] text-primary">OPERATOR</span>
+<div class="p-stack-md bg-secondary-container/40 rounded-xl rounded-tr-none border-r-2 border-r-primary">
+<p class="font-body-md text-body-md text-on-secondary-container">Retrieve the average salary for the Engineering department, but redact specific employee IDs.</p>
+</div>
+</div>
+<div class="flex flex-col gap-2 max-w-[85%]">
+<span class="font-label-caps text-[10px] text-technical-cyan">AGENT_SIGMA</span>
+<div class="p-stack-md glass-panel rounded-xl rounded-tl-none border-l-2 border-l-technical-cyan">
+<p class="font-body-md text-body-md text-on-surface">Acknowledged. Initiating <code class="font-code-sm text-data-highlight">get_salary_aggregates</code>. Monitoring authorization trace for scoped access...</p>
+</div>
+</div>
+</div>
+<!-- Input Area -->
+<div class="p-stack-lg border-t border-outline-variant/10 bg-background/50 backdrop-blur-sm">
+<div class="relative">
+<input class="w-full bg-surface-container-high border border-outline-variant/30 rounded-lg py-3 px-stack-md font-body-md text-body-md text-on-surface placeholder:text-on-surface-variant/40 focus:ring-1 focus:ring-technical-cyan outline-none transition-all" placeholder="Command agent..." type="text"/>
+<button class="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center text-technical-cyan">
+<span class="material-symbols-outlined">send</span>
+</button>
+</div>
+</div>
+</section>
+<!-- Right: Authorization Trace Feed (60%) -->
+<section class="w-[60%] flex flex-col bg-background relative overflow-hidden">
+<!-- Background Visualization -->
+<div class="absolute inset-0 z-0 opacity-20 pointer-events-none">
+
+</div>
+<div class="relative z-10 flex flex-col h-full">
+<!-- Feed Header -->
+<div class="p-stack-md flex items-center justify-between border-b border-outline-variant/20 bg-background/60 backdrop-blur-md">
+<div class="flex items-center gap-stack-md">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">security</span>
+<h2 class="font-headline-md text-headline-md text-on-surface">Authorization Trace</h2>
+</div>
+<div class="flex items-center gap-stack-sm bg-surface-container rounded-full px-3 py-1">
+<span class="w-1.5 h-1.5 rounded-full bg-status-allow animate-pulse"></span>
+<span class="font-label-caps text-label-caps text-on-surface-variant">LIVE FEED</span>
+</div>
+</div>
+<!-- Live Stream Feed -->
+<div class="flex-1 overflow-y-auto p-stack-lg trace-stream-container space-y-gutter relative">
+<!-- Trace Card: ALLOW -->
+<div class="glass-panel p-stack-md rounded-lg active-trace flex flex-col gap-stack-md border-l-4 border-l-status-allow">
+<div class="flex justify-between items-start">
+<div class="flex flex-col gap-1">
+<span class="font-code-sm text-code-sm text-primary">get_salary_aggregates</span>
+<span class="font-label-caps text-[10px] text-on-surface-variant">METHOD: POST • PATH: /api/v1/salary/query</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="px-2 py-0.5 bg-status-allow/10 text-status-allow border border-status-allow/30 rounded font-label-caps text-[10px]">ALLOW</span>
+<span class="font-code-sm text-code-sm text-on-surface-variant">200 OK</span>
+</div>
+</div>
+<div class="flex flex-wrap gap-2">
+<span class="font-code-sm text-[11px] bg-surface-container-high px-2 py-1 rounded text-on-surface-variant border border-outline-variant/20">scope:analytics.read</span>
+<span class="font-code-sm text-[11px] bg-surface-container-high px-2 py-1 rounded text-on-surface-variant border border-outline-variant/20">org:engineering</span>
+</div>
+<div class="pt-2 border-t border-outline-variant/10 flex justify-between items-center">
+<span class="font-label-caps text-[9px] text-on-surface-variant/60">T-MINUS: 00:00:12s</span>
+<button class="font-label-caps text-[10px] text-technical-cyan flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">visibility</span> VIEW JWT
+                            </button>
+</div>
+</div>
+<!-- Trace Card: DENY -->
+<div class="glass-panel p-stack-md rounded-lg flex flex-col gap-stack-md border-l-4 border-l-status-deny opacity-80">
+<div class="flex justify-between items-start">
+<div class="flex flex-col gap-1">
+<span class="font-code-sm text-code-sm text-error">list_individual_payroll</span>
+<span class="font-label-caps text-[10px] text-on-surface-variant">METHOD: GET • PATH: /api/v1/payroll/ids</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="px-2 py-0.5 bg-status-deny/10 text-status-deny border border-status-deny/30 rounded font-label-caps text-[10px]">DENY</span>
+<span class="font-code-sm text-code-sm text-status-deny">403 FORBIDDEN</span>
+</div>
+</div>
+<div class="flex flex-wrap gap-2">
+<span class="font-code-sm text-[11px] bg-error-container/20 px-2 py-1 rounded text-error border border-error/20">MISSING: payroll.admin</span>
+</div>
+<div class="pt-2 border-t border-outline-variant/10 flex justify-between items-center">
+<span class="font-label-caps text-[9px] text-on-surface-variant/60">T-MINUS: 00:01:04s</span>
+<span class="font-label-caps text-[10px] text-on-error">POL_ID: INFRA-004</span>
+</div>
+</div>
+<!-- Trace Card: ALLOW -->
+<div class="glass-panel p-stack-md rounded-lg flex flex-col gap-stack-md border-l-4 border-l-status-allow opacity-60">
+<div class="flex justify-between items-start">
+<div class="flex flex-col gap-1">
+<span class="font-code-sm text-code-sm text-primary">validate_token_chain</span>
+<span class="font-label-caps text-[10px] text-on-surface-variant">METHOD: RPC • CLUSTER: AWS-US-EAST</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="px-2 py-0.5 bg-status-allow/10 text-status-allow border border-status-allow/30 rounded font-label-caps text-[10px]">ALLOW</span>
+<span class="font-code-sm text-code-sm text-on-surface-variant">200 OK</span>
+</div>
+</div>
+<div class="flex flex-wrap gap-2">
+<span class="font-code-sm text-[11px] bg-surface-container-high px-2 py-1 rounded text-on-surface-variant border border-outline-variant/20">sub:system_identity</span>
+</div>
+<div class="pt-2 border-t border-outline-variant/10 flex justify-between items-center">
+<span class="font-label-caps text-[9px] text-on-surface-variant/60">T-MINUS: 00:03:45s</span>
+</div>
+</div>
+</div>
+<!-- Mini JWT Decoder / Footer Area -->
+<div class="h-48 glass-panel m-stack-md rounded-xl p-stack-md flex flex-col gap-stack-sm border border-technical-cyan/20">
+<div class="flex justify-between items-center border-b border-outline-variant/10 pb-2">
+<span class="font-label-caps text-label-caps text-technical-cyan">JWT_DECODER_WIDGET</span>
+<div class="flex gap-2">
+<div class="w-2 h-2 rounded-full bg-data-highlight"></div>
+<div class="w-2 h-2 rounded-full bg-status-allow"></div>
+</div>
+</div>
+<div class="flex-1 font-code-sm text-[12px] text-on-surface-variant overflow-hidden">
+<div class="space-y-1">
+<p><span class="text-data-highlight">"iss"</span>: "okta.ai/security/v2",</p>
+<p><span class="text-data-highlight">"sub"</span>: "agent_sigma_091",</p>
+<p><span class="text-data-highlight">"aud"</span>: "resource_server_aggregates",</p>
+<p><span class="text-data-highlight">"scp"</span>: [<span class="text-status-allow">"analytics.read"</span>, <span class="text-status-allow">"meta.basic"</span>],</p>
+<p><span class="text-data-highlight">"exp"</span>: 1715432400</p>
+</div>
+</div>
+<div class="text-[9px] font-label-caps text-on-surface-variant/40 flex justify-end">
+                        SIG_VERIFIED: RS256
+                    </div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="fixed bottom-0 w-full bg-surface-container-lowest border-t border-outline-variant/20 py-4 flex flex-col md:flex-row justify-between items-center px-margin-page gap-stack-md z-50">
+<span class="font-label-caps text-label-caps text-primary">Signal Intelligence Ops v2.4.0</span>
+<div class="flex gap-stack-lg">
+<a class="font-code-sm text-code-sm text-on-surface-variant hover:text-primary transition-all" href="#">Documentation</a>
+<a class="font-code-sm text-code-sm text-on-surface-variant hover:text-primary transition-all" href="#">Security Policy</a>
+<a class="font-code-sm text-code-sm text-on-surface-variant hover:text-primary transition-all" href="#">API Reference</a>
+</div>
+<div class="flex items-center gap-2">
+<div class="flex gap-1">
+<div class="w-1 h-3 bg-primary/20"></div>
+<div class="w-1 h-3 bg-primary/40"></div>
+<div class="w-1 h-3 bg-primary/60"></div>
+<div class="w-1 h-3 bg-primary"></div>
+</div>
+<span class="font-code-sm text-code-sm text-on-surface-variant">ENCRYPTED_STREAM_STABLE</span>
+</div>
+</footer>
+<!-- Micro-interactions Script -->
+<script>
+        // Simple interactive effect: flash when "Run Scan" is clicked
+        document.querySelector('button').addEventListener('mousedown', function() {
+            this.style.transform = 'scale(0.95)';
+        });
+        document.querySelector('button').addEventListener('mouseup', function() {
+            this.style.transform = 'scale(1)';
+        });
+
+        // Auto-scroll simulation for the trace feed
+        const traceStream = document.querySelector('.trace-stream-container');
+        let isHovered = false;
+
+        traceStream.addEventListener('mouseenter', () => isHovered = true);
+        traceStream.addEventListener('mouseleave', () => isHovered = false);
+
+        // Add a random "new trace" every 10 seconds for visual flavor (mock only)
+        setInterval(() => {
+            if (!isHovered) {
+                const firstChild = traceStream.firstElementChild;
+                if (firstChild) {
+                    firstChild.classList.remove('active-trace');
+                    // In a real app we would prepend a new element here
+                }
+            }
+        }, 10000);
+    </script>
+</body></html>

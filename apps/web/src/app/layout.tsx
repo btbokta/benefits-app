@@ -11,12 +11,13 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" className="dark">
       <body>
         <Suspense fallback={null}>
           <AppNav />
         </Suspense>
-        <main style={{ minHeight: 'calc(100vh - 52px)' }}>
+        {/* Offset for fixed sidebar (248px) + top bar (64px) */}
+        <main style={{ marginLeft: 248, paddingTop: 64, minHeight: '100vh' }}>
           {children}
         </main>
         <Suspense fallback={null}>

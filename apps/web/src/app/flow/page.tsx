@@ -3,62 +3,44 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 
-// ── Static hop metadata per mode ─────────────────────────────────────────────
-
+// ── Static hop metadata ───────────────────────────────────────────────────────
 const ORG = process.env.NEXT_PUBLIC_OKTA_ORG_URL ?? '{org}';
 
 const HOP_META = {
   modeA: [
-    {
-      id: 'flow-hop-1',
-      label: 'Hop 1',
-      endpoint: `POST ${ORG}/oauth2/v1/token`,
-      grantType: 'token-exchange',
-      transform: 'id_token → id-jag',
-      description: 'Agent presents user ID token to org AS; receives Identity Assertion JWT',
-    },
-    {
-      id: 'flow-hop-2',
-      label: 'Hop 2',
-      endpoint: `POST ${ORG}/oauth2/default/v1/token`,
-      grantType: 'jwt-bearer',
-      transform: 'id-jag → access_token',
-      description: 'Agent presents ID-JAG to custom AS; receives scoped Bearer token',
-    },
+    { label: 'Hop 1', grantType: 'token-exchange → id-jag', endpoint: `${ORG}/oauth2/v1/token` },
+    { label: 'Hop 2', grantType: 'jwt-bearer → access_token', endpoint: `${ORG}/oauth2/default/v1/token` },
   ],
   modeC: [
-    {
-      id: 'flow-hop-1',
-      label: 'Exchange',
-      endpoint: `POST ${ORG}/oauth2/default/v1/token`,
-      grantType: 'token-exchange',
-      transform: 'access_token → delegated access_token',
-      description: 'Agent exchanges user access token for a delegated, down-scoped token',
-    },
+    { label: 'Exchange', grantType: 'token-exchange → delegated', endpoint: `${ORG}/oauth2/default/v1/token` },
   ],
 };
 
-// ── Claim descriptions for hover tooltips ────────────────────────────────────
-
+// ── Claim tooltips ────────────────────────────────────────────────────────────
 const CLAIM_DESCRIPTIONS: Record<string, string> = {
-  sub: 'Subject — the user this token was issued for',
-  scp: 'Scopes — exactly what this token is allowed to access',
-  scope: 'Scopes — exactly what this token is allowed to access',
-  cid: 'Client ID — the OAuth app (agent) that holds this token',
-  typ: 'Token type — e.g. oauth-id-jag+jwt identifies an ID-JAG',
-  jti: 'JWT ID — unique identifier; matches the Okta System Log event',
-  aud: 'Audience — the service(s) this token is intended for',
-  act: 'Actor — delegation chain showing who is acting on whose behalf',
-  iss: 'Issuer — the Okta authorization server that minted this token',
-  exp: 'Expiration — Unix timestamp when this token stops being valid',
-  iat: 'Issued At — Unix timestamp when this token was created',
-  groups: 'Groups — Okta groups the user belongs to (used for role derivation)',
+  sub:    'Subject — the user this token was issued for',
+  scp:    'Scopes — what this token is allowed to access',
+  scope:  'Scopes — what this token is allowed to access',
+  cid:    'Client ID — the OAuth app (agent) holding this token',
+  typ:    'Token type — oauth-id-jag+jwt identifies an ID-JAG',
+  jti:    'JWT ID — unique; matches the Okta System Log event',
+  aud:    'Audience — the service(s) this token is intended for',
+  act:    'Actor — delegation chain (agent acting for user)',
+  iss:    'Issuer — the Okta AS that minted this token',
+  exp:    'Expiration — Unix timestamp when this token expires',
+  groups: 'Groups — used to derive role → scope ceiling',
 };
 
-const HIGHLIGHTED_CLAIMS = ['sub', 'scp', 'scope', 'cid', 'act', 'groups', 'jti', 'typ', 'aud', 'iss'];
+const HIGHLIGHTED = ['sub','scp','scope','cid','act','groups','jti','typ','aud','iss'];
+
+// ── Node config ───────────────────────────────────────────────────────────────
+const NODE_CFG = [
+  { color: 'var(--token-id)',    bg: 'rgba(59,130,246,0.08)',   glow: 'glow-id',    icon: 'fingerprint', label: 'ORIGIN' },
+  { color: 'var(--token-jag)',   bg: 'rgba(139,92,246,0.08)',   glow: 'glow-jag',   icon: 'hub',         label: 'BRIDGE' },
+  { color: 'var(--token-agent)', bg: 'rgba(16,185,129,0.08)',   glow: 'glow-agent', icon: 'smart_toy',   label: 'EXECUTION' },
+];
 
 // ── Types ─────────────────────────────────────────────────────────────────────
-
 interface ChainStage {
   stage: string;
   tokenPreview: string;
@@ -66,7 +48,6 @@ interface ChainStage {
   expiresAt?: number;
   durationMs?: number;
 }
-
 interface FlowState {
   scope: string;
   expiresAt: number;
@@ -76,171 +57,119 @@ interface FlowState {
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
-
-function ttl(exp: number, now: number): string {
+function ttl(exp: number, now: number) {
   const s = exp - Math.floor(now / 1000);
   if (s <= 0) return 'expired';
   if (s < 60) return `${s}s`;
   return `${Math.floor(s / 60)}m ${s % 60}s`;
 }
 
-function formatValue(v: unknown): string {
+function fmtVal(v: unknown): string {
   if (Array.isArray(v)) return v.join(', ');
-  if (typeof v === 'number' && (v > 1_000_000_000)) return new Date(v * 1000).toLocaleTimeString();
+  if (typeof v === 'number' && v > 1_000_000_000) return new Date(v * 1000).toLocaleTimeString();
   return String(v);
 }
 
-// ── Sub-components ────────────────────────────────────────────────────────────
-
+// ── ClaimRow with tooltip ─────────────────────────────────────────────────────
 function ClaimRow({ k, v }: { k: string; v: unknown }) {
-  const isHighlighted = HIGHLIGHTED_CLAIMS.includes(k);
-  const description = CLAIM_DESCRIPTIONS[k];
+  const hi = HIGHLIGHTED.includes(k);
+  const tip = CLAIM_DESCRIPTIONS[k];
   return (
-    <div className="flex gap-2 text-xs py-0.5">
-      <span className="w-16 shrink-0 text-gray-500 font-mono">{k}</span>
-      <span className={`font-mono break-all ${isHighlighted ? 'text-yellow-300' : 'text-gray-400'}`}>
-        {formatValue(v)}
+    <div style={{ display: 'flex', gap: 8, padding: '2px 0', alignItems: 'flex-start' }}>
+      <span style={{ width: 54, flexShrink: 0, fontFamily: 'JetBrains Mono, monospace', fontSize: 11, color: 'var(--on-surface-variant)' }}>
+        {k}
       </span>
-      {description && (
-        <span className="group relative ml-auto shrink-0">
-          <span className="text-gray-600 cursor-help text-xs">?</span>
-          <span className="absolute right-0 bottom-full mb-1 w-56 px-2 py-1.5 bg-gray-800 border border-gray-600 rounded text-xs text-gray-200 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-20 leading-relaxed">
-            <strong className="text-white">{k}:</strong> {description}
-          </span>
+      <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, color: hi ? 'var(--highlight)' : 'var(--on-surface-variant)', wordBreak: 'break-all', flex: 1 }}>
+        {fmtVal(v)}
+      </span>
+      {tip && (
+        <span style={{ position: 'relative', display: 'inline-block', marginLeft: 4 }} className="group">
+          <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 10, color: 'var(--outline)', cursor: 'help', userSelect: 'none' }}>?</span>
         </span>
       )}
     </div>
   );
 }
 
-function TokenNode({
-  id,
-  index,
-  stage,
-  now,
-  expanded,
-  onToggle,
-}: {
-  id: string;
-  index: number;
-  stage: ChainStage;
-  now: number;
-  expanded: boolean;
-  onToggle: () => void;
+// ── Token node ────────────────────────────────────────────────────────────────
+function TokenNode({ id, index, stage, now, expanded, onToggle }: {
+  id: string; index: number; stage: ChainStage; now: number;
+  expanded: boolean; onToggle: () => void;
 }) {
-  const keyPayload = Object.entries(stage.decoded?.payload ?? {})
-    .filter(([k]) => HIGHLIGHTED_CLAIMS.includes(k));
+  const cfg = NODE_CFG[index] ?? NODE_CFG[0];
+  const keyPayload = Object.entries(stage.decoded?.payload ?? {}).filter(([k]) => HIGHLIGHTED.includes(k));
   const allPayload = Object.entries(stage.decoded?.payload ?? {});
-  const allHeader = Object.entries(stage.decoded?.header ?? {});
+  const allHeader  = Object.entries(stage.decoded?.header ?? {});
 
-  const nodeClasses = ['token-node-id', 'token-node-jag', 'token-node-agent'];
-  const nodeStyles = [
-    { background: 'rgba(37,99,235,0.08)' },
-    { background: 'rgba(109,40,217,0.08)' },
-    { background: 'rgba(5,150,105,0.08)' },
-  ];
-  const badgeStyles = [
-    { background: 'rgba(37,99,235,0.2)', color: '#93c5fd', border: '1px solid rgba(37,99,235,0.4)' },
-    { background: 'rgba(109,40,217,0.2)', color: '#c4b5fd', border: '1px solid rgba(109,40,217,0.4)' },
-    { background: 'rgba(5,150,105,0.2)', color: '#6ee7b7', border: '1px solid rgba(5,150,105,0.4)' },
-  ];
+  const delayClass = ['animate-glow', 'animate-glow-delay-1', 'animate-glow-delay-2'][index] ?? 'animate-glow';
 
   return (
-    <div id={id} className={nodeClasses[index] ?? ''} style={{
-      ...(nodeStyles[index] ?? {}),
-      borderRadius: 12,
-      border: '1px solid',
-      padding: 16,
-      width: '100%',
-      maxWidth: 300,
-      transition: 'box-shadow 0.3s',
-    }}>
-      {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8, marginBottom: 12 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <span style={{ ...(badgeStyles[index] ?? {}), fontSize: 11, fontWeight: 700, padding: '2px 8px', borderRadius: 4, fontFamily: 'DM Mono, monospace' }}>
-            {index + 1}
-          </span>
-          <span style={{ color: 'var(--text-primary)', fontSize: 13, fontFamily: 'Syne, sans-serif', fontWeight: 600, lineHeight: 1.2 }}>{stage.stage}</span>
-        </div>
-        <div style={{ textAlign: 'right', flexShrink: 0 }}>
-          <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 10, color: 'var(--text-muted)' }}>{stage.tokenPreview}</div>
-          {stage.expiresAt && (
-            <div style={{ fontSize: 10, color: 'var(--amber)', marginTop: 2 }}>{ttl(stage.expiresAt, now)}</div>
-          )}
-          {stage.durationMs !== undefined && (
-            <div style={{ fontSize: 10, color: 'var(--text-muted)', marginTop: 2 }}>{stage.durationMs}ms</div>
-          )}
-        </div>
-      </div>
-
-      {/* Key claims */}
-      {keyPayload.length > 0 && (
-        <div style={{ background: 'rgba(5,12,27,0.5)', borderRadius: 6, padding: '8px 10px', marginBottom: 8 }}>
-          {keyPayload.map(([k, v]) => <ClaimRow key={k} k={k} v={v} />)}
-        </div>
-      )}
-
-      {/* Expand toggle */}
-      <button onClick={onToggle} style={{ fontSize: 11, color: 'var(--text-muted)', background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontFamily: 'DM Mono, monospace' }}>
-        {expanded ? '▲ hide full payload' : '▼ show full payload'}
+    <div id={id} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16, width: '100%', maxWidth: 220 }}>
+      {/* Circular node */}
+      <button
+        onClick={onToggle}
+        className={delayClass + ' ' + cfg.glow}
+        style={{
+          width: 110, height: 110, borderRadius: '50%',
+          background: cfg.bg,
+          border: `2px solid ${cfg.color}60`,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          cursor: 'pointer', transition: 'transform 0.2s',
+          color: cfg.color,
+        }}
+      >
+        <span className="material-symbols-outlined fill-1" style={{ fontSize: 42, color: cfg.color }}>
+          {cfg.icon}
+        </span>
       </button>
 
-      {expanded && (
-        <div style={{ marginTop: 10, display: 'flex', flexDirection: 'column', gap: 8 }}>
-          <div style={{ background: 'rgba(5,12,27,0.7)', borderRadius: 6, padding: '8px 10px' }}>
-            <div style={{ fontSize: 10, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>Header</div>
-            {allHeader.map(([k, v]) => <ClaimRow key={k} k={k} v={v} />)}
+      {/* Label */}
+      <div style={{ textAlign: 'center' }}>
+        <div className="label-caps" style={{ color: cfg.color, marginBottom: 3 }}>{cfg.label}</div>
+        <div style={{ fontFamily: 'DM Sans, sans-serif', fontWeight: 600, fontSize: 15, color: 'var(--on-surface)' }}>{stage.stage}</div>
+        {stage.durationMs !== undefined && (
+          <div className="label-caps" style={{ color: 'var(--outline)', marginTop: 3 }}>{stage.durationMs}ms</div>
+        )}
+        {stage.expiresAt && (
+          <div className="label-caps" style={{ color: '#fbbf24', marginTop: 2 }}>TTL {ttl(stage.expiresAt, now)}</div>
+        )}
+      </div>
+
+      {/* JWT claims panel */}
+      {expanded && stage.decoded && (
+        <div style={{
+          width: 280, background: 'var(--surface-high)',
+          border: '1px solid rgba(69,70,75,0.4)',
+          borderRadius: '0.25rem', padding: 14, boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
+        }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8, paddingBottom: 8, borderBottom: '1px solid var(--outline-variant)' }}>
+            <span className="label-caps" style={{ color: 'var(--on-surface-variant)' }}>Decoded JWT</span>
+            <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 10, color: 'var(--on-surface-variant)' }}>{stage.tokenPreview}</span>
           </div>
-          <div style={{ background: 'rgba(5,12,27,0.7)', borderRadius: 6, padding: '8px 10px' }}>
-            <div style={{ fontSize: 10, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>Full Payload</div>
-            {allPayload.map(([k, v]) => <ClaimRow key={k} k={k} v={v} />)}
-          </div>
+
+          {keyPayload.length > 0 && (
+            <div style={{ marginBottom: 10 }}>
+              <div className="label-caps" style={{ color: 'var(--outline)', marginBottom: 5 }}>Key claims</div>
+              {keyPayload.map(([k, v]) => <ClaimRow key={k} k={k} v={v} />)}
+            </div>
+          )}
+
+          <details>
+            <summary className="label-caps" style={{ color: 'var(--outline)', cursor: 'pointer', marginBottom: 5 }}>Full payload</summary>
+            <div style={{ marginTop: 6 }}>
+              <div className="label-caps" style={{ color: 'var(--outline-variant)', marginBottom: 3 }}>Header</div>
+              {allHeader.map(([k, v]) => <ClaimRow key={k} k={k} v={v} />)}
+              <div className="label-caps" style={{ color: 'var(--outline-variant)', marginTop: 8, marginBottom: 3 }}>Payload</div>
+              {allPayload.map(([k, v]) => <ClaimRow key={k} k={k} v={v} />)}
+            </div>
+          </details>
         </div>
       )}
-    </div>
-  );
-}
-
-function HopConnector({ meta }: { meta: typeof HOP_META.modeA[0] }) {
-  return (
-    <div className="flex flex-col items-center justify-center px-2 py-4 lg:py-0 lg:px-4 shrink-0">
-      {/* Arrow — vertical on mobile, horizontal on lg */}
-      <div className="flex flex-col lg:flex-row items-center gap-1 lg:gap-0">
-        {/* Label above/left */}
-        <div className="text-center lg:text-right lg:mr-3 max-w-[140px]">
-          <div className="text-xs font-bold text-gray-300">{meta.label}</div>
-          <div className="text-xs text-blue-400 font-mono mt-0.5">{meta.grantType}</div>
-          <div className="text-xs text-gray-500 mt-0.5">{meta.transform}</div>
-        </div>
-
-        {/* Arrow shaft + head */}
-        <div className="flex flex-col lg:flex-row items-center">
-          <div className="w-px h-8 lg:w-8 lg:h-px bg-gray-600" />
-          {/* Arrowhead */}
-          <div className="w-0 h-0
-            border-l-[6px] border-l-transparent
-            border-r-[6px] border-r-transparent
-            border-t-[8px] border-t-gray-500
-            lg:border-t-[6px] lg:border-t-transparent
-            lg:border-b-[6px] lg:border-b-transparent
-            lg:border-l-[8px] lg:border-l-gray-500
-            lg:border-r-0" />
-        </div>
-      </div>
-
-      {/* Endpoint URL below arrow */}
-      <div className="mt-2 text-center">
-        <div className="text-xs text-gray-600 font-mono truncate max-w-[160px]" title={meta.endpoint}>
-          {meta.endpoint.replace(ORG, '{org}')}
-        </div>
-      </div>
     </div>
   );
 }
 
 // ── Main page ─────────────────────────────────────────────────────────────────
-
 export default function FlowPage() {
   const [state, setState] = useState<FlowState | null>(null);
   const [loading, setLoading] = useState(true);
@@ -249,8 +178,8 @@ export default function FlowPage() {
   const [now, setNow] = useState(Date.now());
 
   useEffect(() => {
-    const interval = setInterval(() => setNow(Date.now()), 1000);
-    return () => clearInterval(interval);
+    const iv = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(iv);
   }, []);
 
   async function load(refresh = false) {
@@ -259,11 +188,9 @@ export default function FlowPage() {
       const res = await fetch(`/api/broker${refresh ? '?refresh=1' : ''}`);
       const data = await res.json() as FlowState & { error?: string };
       setState(data);
-    } catch (err) {
-      setState({ scope: '', expiresAt: 0, chain: [], mode: '', error: String(err) });
-    } finally {
-      setLoading(false);
-    }
+    } catch (e) {
+      setState({ scope: '', expiresAt: 0, chain: [], mode: '', error: String(e) });
+    } finally { setLoading(false); }
   }
 
   async function revoke() {
@@ -276,198 +203,249 @@ export default function FlowPage() {
   useEffect(() => { load(); }, []);
 
   const hops = state?.mode === 'obo' ? HOP_META.modeC : HOP_META.modeA;
-
-  // Scope transformation data
   const idTokenPayload = state?.chain?.[0]?.decoded?.payload ?? {};
   const userGroups = Array.isArray(idTokenPayload.groups) ? (idTokenPayload.groups as string[]) : [];
   const agentScopes = state?.scope?.split(' ').filter(Boolean) ?? [];
 
   return (
-    <div className="max-w-6xl mx-auto p-6 pb-24">
+    <div style={{ padding: '40px 40px 120px' }}>
+
       {/* Header */}
-      <div className="flex items-start justify-between mb-6 flex-wrap gap-3">
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 28, flexWrap: 'wrap', gap: 16 }}>
         <div>
-          <h1 className="text-white font-bold text-xl">Token Flow Visualizer</h1>
-          <p className="text-gray-400 text-sm mt-1">
-            The Okta for AI ID-JAG exchange — every hop decoded in real time
+          <h1 style={{ fontFamily: 'DM Sans, sans-serif', fontWeight: 700, fontSize: 30, letterSpacing: '-0.02em', color: 'var(--on-surface)', marginBottom: 6 }}>
+            Token Flow Visualizer
+          </h1>
+          <p style={{ color: 'var(--on-surface-variant)', fontSize: 14 }}>
+            The cryptographic signal path through the Okta for AI ID-JAG protocol — decoded in real time
           </p>
         </div>
-        <div className="flex gap-2 flex-wrap">
-          <button
-            onClick={() => load(true)}
-            disabled={loading}
-            className="bg-gray-700 hover:bg-gray-600 disabled:opacity-50 text-white px-3 py-1.5 rounded text-sm transition-colors"
-          >
-            {loading ? 'Loading…' : 'Refresh exchange'}
+        <div style={{ display: 'flex', gap: 8 }}>
+          <button onClick={() => load(true)} disabled={loading} className="btn btn-ghost" style={{ fontSize: 13 }}>
+            <span className="material-symbols-outlined" style={{ fontSize: 16 }}>refresh</span>
+            {loading ? 'Loading…' : 'Refresh'}
           </button>
-          <button
-            onClick={revoke}
-            disabled={revoking || loading}
-            className="bg-red-800 hover:bg-red-700 disabled:opacity-50 text-white px-3 py-1.5 rounded text-sm transition-colors"
-          >
+          <button onClick={revoke} disabled={revoking || loading} className="btn btn-ghost" style={{ fontSize: 13, color: 'var(--deny)' }}>
+            <span className="material-symbols-outlined" style={{ fontSize: 16 }}>token</span>
             {revoking ? 'Revoking…' : 'Revoke token'}
           </button>
-          <Link href="/chat" className="bg-blue-700 hover:bg-blue-600 text-white px-3 py-1.5 rounded text-sm transition-colors">
-            Chat →
-          </Link>
-          <Link href="/" className="bg-gray-800 text-gray-400 hover:text-white px-3 py-1.5 rounded text-sm transition-colors">
-            Home
-          </Link>
         </div>
       </div>
 
-      {/* Mode + summary bar */}
+      {/* Mode bar */}
       {state && !state.error && (
-        <div className="bg-gray-900 border border-gray-700 rounded p-3 mb-6 flex flex-wrap gap-4 text-sm">
-          <div>
-            <span className="text-gray-400">Mode: </span>
-            <span className="text-blue-400 font-bold">{state.mode}</span>
-          </div>
-          <div>
-            <span className="text-gray-400">Scopes granted: </span>
-            <span className="text-green-400 font-mono text-xs">{state.scope || '—'}</span>
-          </div>
+        <div style={{
+          display: 'flex', gap: 20, padding: '10px 16px', marginBottom: 32,
+          background: 'var(--surface-low)', border: '1px solid var(--outline-variant)',
+          borderRadius: '0.25rem', fontSize: 12, flexWrap: 'wrap', alignItems: 'center',
+        }}>
+          <span><span className="label-caps" style={{ color: 'var(--outline)' }}>mode </span>
+            <span style={{ fontFamily: 'JetBrains Mono, monospace', color: 'var(--cyan)', fontWeight: 600 }}>{state.mode}</span>
+          </span>
           {state.expiresAt > 0 && (
-            <div>
-              <span className="text-gray-400">Token TTL: </span>
-              <span className="text-yellow-400">{ttl(state.expiresAt, now)}</span>
-            </div>
+            <span><span className="label-caps" style={{ color: 'var(--outline)' }}>ttl </span>
+              <span style={{ fontFamily: 'JetBrains Mono, monospace', color: '#fbbf24' }}>{ttl(state.expiresAt, now)}</span>
+            </span>
           )}
+          <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap', alignItems: 'center' }}>
+            <span className="label-caps" style={{ color: 'var(--outline)' }}>scopes</span>
+            {agentScopes.map(s => <span key={s} className="scope-chip">{s}</span>)}
+          </div>
+          <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 6 }}>
+            <span className="pulse-dot" />
+            <span className="label-caps" style={{ color: 'var(--allow)' }}>SIGNAL ACTIVE</span>
+          </div>
         </div>
       )}
 
       {/* Error */}
       {state?.error && (
-        <div className="bg-red-950 border border-red-700 rounded p-4 mb-6 text-red-300 text-sm">
+        <div style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.3)', borderRadius: '0.25rem', padding: 16, color: 'var(--deny)', marginBottom: 24 }}>
           {state.error}
         </div>
       )}
 
       {/* Not authenticated */}
-      {!loading && !state && (
-        <div className="bg-gray-900 border border-gray-700 rounded p-8 text-center text-gray-400">
-          <p className="mb-3">Sign in to see the token exchange flow.</p>
-          <a href="/auth/login" className="bg-blue-700 hover:bg-blue-600 text-white px-4 py-2 rounded text-sm transition-colors inline-block">
-            Sign in with Okta
-          </a>
+      {!loading && (!state || !state.chain?.length) && !state?.error && (
+        <div style={{ textAlign: 'center', padding: '60px 20px', background: 'var(--surface-low)', border: '1px solid var(--outline-variant)', borderRadius: '0.5rem' }}>
+          <span className="material-symbols-outlined fill-1" style={{ fontSize: 48, color: 'var(--outline)', display: 'block', marginBottom: 12 }}>lock_person</span>
+          <p style={{ color: 'var(--on-surface-variant)', marginBottom: 20 }}>Sign in to see the live token exchange</p>
+          <a href="/auth/login" className="btn btn-primary" style={{ textDecoration: 'none' }}>Sign in with Okta</a>
         </div>
       )}
 
-      {/* ── Flow diagram ── */}
+      {/* ── Flow visualization canvas ── */}
       {state && !state.error && state.chain.length > 0 && (
         <>
-          <div className="mb-2">
-            <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wider">Token Exchange Chain</h2>
-          </div>
+          <div style={{
+            position: 'relative',
+            background: 'rgba(14,14,15,0.5)',
+            border: '1px solid rgba(69,70,75,0.2)',
+            borderRadius: '0.75rem',
+            padding: '48px 24px',
+            display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between',
+            gap: 0, overflow: 'hidden', minHeight: 280,
+          }}>
+            {/* Animated SVG connector lines */}
+            <svg style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none' }} xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="grad1" x1="0%" x2="100%" y1="0%" y2="0%">
+                  <stop offset="0%" stopColor="#3b82f6" />
+                  <stop offset="100%" stopColor="#8b5cf6" />
+                </linearGradient>
+                <linearGradient id="grad2" x1="0%" x2="100%" y1="0%" y2="0%">
+                  <stop offset="0%" stopColor="#8b5cf6" />
+                  <stop offset="100%" stopColor="#10b981" />
+                </linearGradient>
+                <linearGradient id="grad3" x1="0%" x2="100%" y1="0%" y2="0%">
+                  <stop offset="0%" stopColor="#10b981" />
+                  <stop offset="50%" stopColor="#22d3ee" />
+                </linearGradient>
+              </defs>
+              {/* Hop 1: blue → purple */}
+              <path className="flow-dash" d="M28% 50% L47% 50%" fill="none" stroke="url(#grad1)" strokeWidth="1.5" />
+              {/* Hop 2: purple → green */}
+              <path className="flow-dash" d="M54% 50% L73% 50%" fill="none" stroke="url(#grad2)" strokeWidth="1.5" style={{ animationDelay: '-5s' }} />
+              {/* To RS */}
+              <path className="flow-dash" d="M79% 50% L93% 50%" fill="none" stroke="url(#grad3)" strokeWidth="1.5" style={{ animationDelay: '-10s' }} />
+            </svg>
 
-          {/* Nodes + connectors — responsive: column on mobile, row on lg */}
-          <div className="flex flex-col lg:flex-row items-center lg:items-start gap-0 overflow-x-auto pb-4">
-            {state.chain.map((stage, i) => (
-              <div key={i} className="flex flex-col lg:flex-row items-center w-full lg:w-auto">
-                <TokenNode
-                  id={`flow-node-${i}`}
-                  index={i}
-                  stage={stage}
-                  now={now}
-                  expanded={!!expanded[i]}
-                  onToggle={() => setExpanded(e => ({ ...e, [i]: !e[i] }))}
-                />
-                {i < state.chain.length - 1 && hops[i] && (
-                  <HopConnector meta={hops[i]} />
-                )}
+            {/* Node 1 — ID Token */}
+            <TokenNode id="flow-node-0" index={0} stage={state.chain[0]} now={now}
+              expanded={!!expanded[0]} onToggle={() => setExpanded(e => ({ ...e, 0: !e[0] }))} />
+
+            {/* Hop 1 label */}
+            {hops[0] && (
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', paddingTop: 40, flex: 1, minWidth: 0, gap: 4 }}>
+                <span className="label-caps" style={{ color: 'var(--on-surface-variant)' }}>{hops[0].label}</span>
+                <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 10, color: 'var(--cyan)', textAlign: 'center' }}>{hops[0].grantType}</span>
+                <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 9, color: 'var(--outline)', textAlign: 'center', maxWidth: 140, lineHeight: 1.3 }}>
+                  {hops[0].endpoint.replace(ORG, '{org}')}
+                </span>
               </div>
-            ))}
+            )}
 
-            {/* Resource Server terminus */}
-            <div className="flex flex-col lg:flex-row items-center">
-              <HopConnector meta={{
-                id: 'flow-hop-rs',
-                label: 'API call',
-                endpoint: 'Authorization: Bearer →',
-                grantType: 'bearer token',
-                transform: 'resource server',
-                description: 'Agent presents the access token on every API call',
-              }} />
-              <div className="rounded-lg border border-gray-700 bg-gray-900 p-4 w-full max-w-sm">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="text-xs font-bold px-2 py-0.5 rounded bg-gray-800 text-gray-300">RS</span>
-                  <span className="text-white text-sm font-medium">Resource Server :3001</span>
-                </div>
-                <div className="text-xs text-gray-400 space-y-1">
-                  <div><span className="text-gray-500">validates: </span><span className="font-mono text-gray-300">iss + aud + exp + scp</span></div>
-                  <div><span className="text-gray-500">enforces: </span><span className="font-mono text-gray-300">scope + row-level</span></div>
-                  <div className="mt-2">
-                    <a href={`${ORG}/admin/reports/systemlog`} target="_blank" rel="noopener noreferrer"
-                      className="text-blue-400 hover:underline text-xs">
-                      Okta System Log →
-                    </a>
-                  </div>
-                </div>
+            {/* Node 2 — ID-JAG */}
+            {state.chain[1] && (
+              <TokenNode id="flow-node-1" index={1} stage={state.chain[1]} now={now}
+                expanded={!!expanded[1]} onToggle={() => setExpanded(e => ({ ...e, 1: !e[1] }))} />
+            )}
+
+            {/* Hop 2 label */}
+            {hops[1] && (
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', paddingTop: 40, flex: 1, minWidth: 0, gap: 4 }}>
+                <span className="label-caps" style={{ color: 'var(--on-surface-variant)' }}>{hops[1].label}</span>
+                <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 10, color: 'var(--cyan)', textAlign: 'center' }}>{hops[1].grantType}</span>
+                <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 9, color: 'var(--outline)', textAlign: 'center', maxWidth: 140, lineHeight: 1.3 }}>
+                  {hops[1].endpoint.replace(ORG, '{org}')}
+                </span>
+              </div>
+            )}
+
+            {/* Node 3 — Agent Access Token */}
+            {state.chain[2] && (
+              <TokenNode id="flow-node-2" index={2} stage={state.chain[2]} now={now}
+                expanded={!!expanded[2]} onToggle={() => setExpanded(e => ({ ...e, 2: !e[2] }))} />
+            )}
+
+            {/* Arrow to RS */}
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', paddingTop: 40, flex: 1, minWidth: 0, gap: 4 }}>
+              <span className="label-caps" style={{ color: 'var(--on-surface-variant)' }}>API call</span>
+              <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 10, color: 'var(--allow)' }}>Bearer token</span>
+            </div>
+
+            {/* Resource server node */}
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12, maxWidth: 180 }}>
+              <div style={{
+                width: 88, height: 88, borderRadius: '0.5rem',
+                background: 'rgba(34,211,238,0.06)', border: '1px dashed rgba(34,211,238,0.3)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+              }}>
+                <span className="material-symbols-outlined fill-1" style={{ fontSize: 36, color: 'var(--cyan)' }}>dns</span>
+              </div>
+              <div style={{ textAlign: 'center' }}>
+                <div className="label-caps" style={{ color: 'var(--cyan)' }}>RESOURCE</div>
+                <div style={{ fontFamily: 'DM Sans, sans-serif', fontWeight: 600, fontSize: 13, color: 'var(--on-surface)' }}>Server :3001</div>
+                <div style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 10, color: 'var(--outline)', marginTop: 3 }}>validates iss + aud + scp</div>
               </div>
             </div>
           </div>
 
-          {/* ── Scope transformation card ── */}
-          <div className="mt-8 bg-gray-900 border border-gray-700 rounded-lg p-5">
-            <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">Scope Transformation</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-start">
-
+          {/* Scope Transformation */}
+          <div style={{ marginTop: 20, background: 'var(--surface-low)', border: '1px solid var(--outline-variant)', borderRadius: '0.5rem', overflow: 'hidden' }}>
+            <div style={{ padding: '14px 20px', borderBottom: '1px solid var(--outline-variant)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div>
+                <div style={{ fontFamily: 'DM Sans, sans-serif', fontWeight: 600, fontSize: 15, color: 'var(--on-surface)' }}>Scope Transformation</div>
+                <div style={{ fontFamily: 'DM Sans, sans-serif', fontSize: 13, color: 'var(--on-surface-variant)', marginTop: 2 }}>Policy mapping during JWT translation across the secure bridge</div>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '4px 12px', background: 'var(--surface-high)', border: '1px solid var(--outline-variant)', borderRadius: 99 }}>
+                <span className="pulse-dot" />
+                <span className="label-caps" style={{ color: 'var(--on-surface)' }}>SIGNAL ACTIVE</span>
+              </div>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 80px 1fr' }}>
               {/* User identity */}
-              <div className="bg-gray-950 rounded p-3">
-                <div className="text-xs text-blue-400 font-semibold mb-2 uppercase tracking-wider">User identity (ID token)</div>
+              <div style={{ padding: '24px 24px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
+                  <div style={{ width: 36, height: 36, borderRadius: '0.25rem', background: 'rgba(59,130,246,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <span className="material-symbols-outlined fill-1" style={{ fontSize: 20, color: 'var(--token-id)' }}>person</span>
+                  </div>
+                  <div>
+                    <div className="label-caps" style={{ color: 'var(--outline)' }}>Source</div>
+                    <div style={{ fontFamily: 'DM Sans, sans-serif', fontWeight: 600, fontSize: 14, color: 'var(--on-surface)' }}>User Role / Groups</div>
+                  </div>
+                </div>
                 {userGroups.length > 0 ? (
-                  <div className="space-y-1">
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
                     {userGroups.map(g => (
-                      <div key={g} className="text-xs font-mono bg-blue-950 text-blue-300 px-2 py-0.5 rounded inline-block mr-1 mb-1">{g}</div>
+                      <span key={g} className="label-caps" style={{ padding: '3px 10px', borderRadius: 2, background: 'rgba(59,130,246,0.1)', border: '1px solid rgba(59,130,246,0.25)', color: '#93c5fd' }}>
+                        {g}
+                      </span>
                     ))}
-                    <p className="text-xs text-gray-500 mt-2">Groups determine the role → scope ceiling at exchange time</p>
                   </div>
                 ) : (
-                  <p className="text-xs text-gray-500">No groups claim in ID token. Groups may be included in a custom claim.</p>
+                  <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, color: 'var(--outline)' }}>groups claim not in ID token</p>
                 )}
               </div>
 
               {/* Arrow */}
-              <div className="flex items-center justify-center">
-                <div className="text-center">
-                  <div className="text-2xl text-gray-600">→</div>
-                  <div className="text-xs text-gray-500 mt-1">Okta resource connection</div>
-                  <div className="text-xs text-gray-600">scope ceiling applied</div>
-                </div>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', borderLeft: '1px solid var(--outline-variant)', borderRight: '1px solid var(--outline-variant)' }}>
+                <span className="material-symbols-outlined" style={{ fontSize: 28, color: 'var(--outline)' }}>arrow_forward</span>
               </div>
 
               {/* Agent scopes */}
-              <div className="bg-gray-950 rounded p-3">
-                <div className="text-xs text-green-400 font-semibold mb-2 uppercase tracking-wider">Agent was granted</div>
+              <div style={{ padding: '24px 24px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
+                  <div style={{ width: 36, height: 36, borderRadius: '0.25rem', background: 'rgba(16,185,129,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <span className="material-symbols-outlined fill-1" style={{ fontSize: 20, color: 'var(--token-agent)' }}>smart_toy</span>
+                  </div>
+                  <div>
+                    <div className="label-caps" style={{ color: 'var(--outline)' }}>Agent granted</div>
+                    <div style={{ fontFamily: 'DM Sans, sans-serif', fontWeight: 600, fontSize: 14, color: 'var(--on-surface)' }}>Scoped Bearer Token</div>
+                  </div>
+                </div>
                 {agentScopes.length > 0 ? (
-                  <div className="space-y-1">
-                    {agentScopes.map(s => (
-                      <div key={s} className="text-xs font-mono bg-green-950 text-green-300 px-2 py-0.5 rounded inline-block mr-1 mb-1">{s}</div>
-                    ))}
-                    <p className="text-xs text-gray-500 mt-2">Only these scopes will be accepted by the resource server</p>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                    {agentScopes.map(s => <span key={s} className="scope-chip">{s}</span>)}
                   </div>
                 ) : (
-                  <p className="text-xs text-gray-500">No scopes in token yet — trigger an exchange first.</p>
+                  <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, color: 'var(--outline)' }}>no scopes yet — trigger an exchange</p>
                 )}
               </div>
             </div>
           </div>
 
-          {/* ── Kill switch note ── */}
-          <div className="mt-4 bg-gray-900 border border-gray-700 rounded p-4 flex items-start justify-between gap-4 flex-wrap">
+          {/* Kill switch */}
+          <div style={{ marginTop: 16, background: 'var(--surface-low)', border: '1px solid var(--outline-variant)', borderRadius: '0.25rem', padding: '14px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 20, flexWrap: 'wrap' }}>
             <div>
-              <div className="text-sm font-medium text-white mb-1">Kill switch demo</div>
-              <p className="text-xs text-gray-400">
-                Deactivate the agent in the Okta Admin Console to see all future exchanges fail with <span className="font-mono text-red-400">invalid_client</span>. Reactivate to restore access without any code changes.
+              <div style={{ fontFamily: 'DM Sans, sans-serif', fontWeight: 600, fontSize: 14, color: 'var(--on-surface)', marginBottom: 3 }}>Kill switch demo</div>
+              <p style={{ fontFamily: 'DM Sans, sans-serif', fontSize: 13, color: 'var(--on-surface-variant)' }}>
+                Deactivate the agent in Okta → next exchange fails with <code style={{ fontFamily: 'JetBrains Mono, monospace', color: 'var(--deny)' }}>invalid_client</code>. Reactivate to restore — no code changes.
               </p>
             </div>
-            <a
-              href={`${ORG}/admin/access/ai-agents`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="bg-gray-700 hover:bg-gray-600 text-white px-3 py-1.5 rounded text-sm transition-colors whitespace-nowrap shrink-0"
-            >
-              Directory → AI Agents →
+            <a href={`${ORG}/admin/access/ai-agents`} target="_blank" rel="noopener noreferrer" className="btn btn-ghost" style={{ textDecoration: 'none', fontSize: 13 }}>
+              <span className="material-symbols-outlined" style={{ fontSize: 16 }}>open_in_new</span>
+              Directory → AI Agents
             </a>
           </div>
         </>

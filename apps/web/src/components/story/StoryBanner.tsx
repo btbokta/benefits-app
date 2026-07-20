@@ -141,95 +141,90 @@ export function StoryBanner() {
   const expectedEmail = beat.requiresPersona ? PERSONA_EMAILS[beat.requiresPersona] : null;
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 bg-gray-900 border-t border-gray-700 shadow-2xl">
+    <div style={{
+      position: 'fixed', bottom: 0, left: 248, right: 0, zIndex: 50,
+      background: 'rgba(28,27,28,0.92)', backdropFilter: 'blur(12px)',
+      borderTop: '1px solid rgba(69,70,75,0.5)',
+      boxShadow: '0 -8px 32px rgba(0,0,0,0.4)',
+    }}>
       {/* Title bar — always visible */}
-      <div className="flex items-center justify-between px-4 py-2 border-b border-gray-800">
-        <div className="flex items-center gap-3">
-          <span className="text-xs bg-blue-900 text-blue-300 px-2 py-0.5 rounded font-bold">
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 20px', borderBottom: minimized ? 'none' : '1px solid rgba(69,70,75,0.4)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 2, background: 'rgba(195,198,210,0.12)', border: '1px solid rgba(195,198,210,0.25)', color: '#c3c6d2', letterSpacing: '0.05em' }}>
             DEMO {step}/{STORY_BEATS.length}
           </span>
-          <span className="text-white text-sm font-medium truncate max-w-xs">{beat.title}</span>
+          <span style={{ fontFamily: 'DM Sans, sans-serif', fontWeight: 600, fontSize: 14, color: '#e5e2e2', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 320 }}>
+            {beat.title}
+          </span>
         </div>
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => setMinimized(m => !m)}
-            className="text-gray-400 hover:text-white text-xs px-2 py-1 rounded transition-colors"
-            title={minimized ? 'Expand' : 'Minimize'}
-          >
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          <button onClick={() => setMinimized(m => !m)} style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, color: '#909096', background: 'none', border: 'none', cursor: 'pointer', padding: '4px 8px' }} title={minimized ? 'Expand' : 'Minimize'}>
             {minimized ? '▲' : '▼'}
           </button>
-          <button
-            onClick={exitStory}
-            className="text-gray-500 hover:text-red-400 text-xs px-2 py-1 rounded transition-colors"
-          >
-            ✕ Exit
+          <button onClick={exitStory} style={{ fontFamily: 'DM Sans, sans-serif', fontSize: 12, color: '#909096', background: 'none', border: 'none', cursor: 'pointer', padding: '4px 8px' }}>
+            ✕ Exit Demo
           </button>
         </div>
       </div>
 
       {/* Expanded content */}
       {!minimized && (
-        <div className="px-4 py-3">
+        <div style={{ padding: '14px 20px' }}>
           {/* Persona warning */}
           {needsPersona && (
-            <div className="bg-amber-950 border border-amber-700 rounded p-2 mb-3 flex items-center justify-between gap-3 text-xs">
-              <span className="text-amber-300">
-                This step requires <strong>{expectedEmail}</strong>
-                {currentEmail && currentEmail !== expectedEmail && ` — currently signed in as ${currentEmail}`}
+            <div style={{ background: 'rgba(251,191,36,0.08)', border: '1px solid rgba(251,191,36,0.25)', borderRadius: 2, padding: '8px 12px', marginBottom: 12, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
+              <span style={{ fontFamily: 'DM Sans, sans-serif', fontSize: 12, color: '#fcd34d' }}>
+                Requires <strong style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11 }}>{expectedEmail}</strong>
+                {currentEmail && currentEmail !== expectedEmail && ` — signed in as ${currentEmail}`}
               </span>
-              <a href="/auth/login" className="bg-amber-700 hover:bg-amber-600 text-white px-3 py-1 rounded text-xs whitespace-nowrap transition-colors">
+              <a href="/auth/login" style={{ fontFamily: 'DM Sans, sans-serif', fontSize: 12, fontWeight: 600, background: 'rgba(251,191,36,0.15)', color: '#fbbf24', border: '1px solid rgba(251,191,36,0.3)', borderRadius: 2, padding: '4px 12px', textDecoration: 'none', whiteSpace: 'nowrap' }}>
                 Sign in →
               </a>
             </div>
           )}
 
           {/* Narration */}
-          <p className="text-gray-300 text-sm leading-relaxed mb-3">{beat.narration}</p>
+          <p style={{ fontFamily: 'DM Sans, sans-serif', fontSize: 14, color: '#c6c6cc', lineHeight: 1.65, marginBottom: 12 }}>{beat.narration}</p>
 
           {/* Run result */}
           {runResult && (
-            <div className="bg-gray-800 border border-gray-600 rounded p-2 mb-3 text-xs text-gray-300 font-mono max-h-20 overflow-y-auto">
+            <div style={{ background: 'var(--surface-high)', border: '1px solid var(--outline-variant)', borderRadius: 2, padding: '8px 12px', marginBottom: 12, fontFamily: 'JetBrains Mono, monospace', fontSize: 12, color: '#c6c6cc', maxHeight: 80, overflowY: 'auto' }}>
               {runResult}
             </div>
           )}
 
           {/* Controls */}
-          <div className="flex items-center gap-2 flex-wrap">
-            <button
-              onClick={goPrev}
-              disabled={step === 1}
-              className="bg-gray-700 hover:bg-gray-600 disabled:opacity-40 text-white px-3 py-1.5 rounded text-sm transition-colors"
-            >
-              ← Prev
-            </button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+            <button onClick={goPrev} disabled={step === 1} style={{
+              fontFamily: 'DM Sans, sans-serif', fontSize: 13, fontWeight: 600,
+              padding: '7px 14px', borderRadius: 2, cursor: 'pointer', border: '1px solid var(--outline-variant)',
+              background: 'var(--surface-high)', color: '#e5e2e2', opacity: step === 1 ? 0.4 : 1,
+            }}>← Prev</button>
 
             {beat.action && beat.action !== 'manual' && (
-              <button
-                onClick={runAction}
-                disabled={running || needsPersona}
-                className="bg-blue-700 hover:bg-blue-600 disabled:opacity-50 text-white px-3 py-1.5 rounded text-sm transition-colors"
-              >
+              <button onClick={runAction} disabled={running || needsPersona} style={{
+                fontFamily: 'DM Sans, sans-serif', fontSize: 13, fontWeight: 600,
+                padding: '7px 16px', borderRadius: 2, cursor: 'pointer', border: 'none',
+                background: 'var(--primary)', color: '#2d303a', opacity: running || needsPersona ? 0.45 : 1,
+              }}>
                 {running ? 'Running…' : beat.action === 'query' ? '▶ Run query' : '▶ Navigate'}
               </button>
             )}
 
-            <button
-              onClick={goNext}
-              disabled={isLastStep}
-              className="bg-gray-700 hover:bg-gray-600 disabled:opacity-40 text-white px-3 py-1.5 rounded text-sm transition-colors"
-            >
-              Next →
-            </button>
+            <button onClick={goNext} disabled={isLastStep} style={{
+              fontFamily: 'DM Sans, sans-serif', fontSize: 13, fontWeight: 600,
+              padding: '7px 14px', borderRadius: 2, cursor: 'pointer', border: '1px solid var(--outline-variant)',
+              background: 'var(--surface-high)', color: '#e5e2e2', opacity: isLastStep ? 0.4 : 1,
+            }}>Next →</button>
 
             {/* Step dots */}
-            <div className="flex gap-1 ml-2">
+            <div style={{ display: 'flex', gap: 5, marginLeft: 8 }}>
               {STORY_BEATS.map(b => (
-                <button
-                  key={b.step}
-                  onClick={() => setStep(b.step)}
-                  className={`w-2 h-2 rounded-full transition-colors ${b.step === step ? 'bg-blue-400' : 'bg-gray-600 hover:bg-gray-400'}`}
-                  title={b.title}
-                />
+                <button key={b.step} onClick={() => setStep(b.step)} title={b.title} style={{
+                  width: 8, height: 8, borderRadius: '50%', border: 'none', cursor: 'pointer',
+                  background: b.step === step ? 'var(--primary)' : 'var(--outline-variant)',
+                  padding: 0, transition: 'background 0.15s',
+                }} />
               ))}
             </div>
           </div>

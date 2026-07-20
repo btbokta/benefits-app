@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Token Flow Visualizer | Benefits Portal Ops</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700&amp;family=JetBrains+Mono:wght@500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .circuit-grid {
+            background-image: radial-gradient(circle at 2px 2px, rgba(195, 198, 210, 0.03) 1px, transparent 0);
+            background-size: 40px 40px;
+            background-color: #0e0e0f;
+        }
+        .glass-card {
+            background: rgba(32, 31, 32, 0.6);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(144, 144, 150, 0.15);
+        }
+        @keyframes pulse-glow {
+            0%, 100% { filter: drop-shadow(0 0 8px currentColor) opacity(0.8); }
+            50% { filter: drop-shadow(0 0 20px currentColor) opacity(1); }
+        }
+        .animate-pulse-glow {
+            animation: pulse-glow 3s infinite ease-in-out;
+        }
+        .flow-line {
+            stroke-dasharray: 10;
+            animation: dash 20s linear infinite;
+        }
+        @keyframes dash {
+            to { stroke-dashoffset: -1000; }
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface-container-highest": "#353435",
+                      "status-allow": "#10b981",
+                      "on-primary-fixed": "#181c24",
+                      "primary-fixed": "#e0e2ee",
+                      "on-tertiary": "#3c2e21",
+                      "tertiary-fixed": "#f6decc",
+                      "on-tertiary-container": "#887565",
+                      "surface-container-low": "#1c1b1c",
+                      "primary-container": "#050810",
+                      "surface-tint": "#c3c6d2",
+                      "on-surface": "#e5e2e2",
+                      "on-surface-variant": "#c6c6cc",
+                      "status-deny": "#ef4444",
+                      "on-error": "#690005",
+                      "surface-container-high": "#2a2a2a",
+                      "secondary-container": "#41495f",
+                      "token-id": "#3b82f6",
+                      "surface-bright": "#3a393a",
+                      "persona-manager": "#a855f7",
+                      "surface-container": "#201f20",
+                      "on-secondary": "#283045",
+                      "primary-fixed-dim": "#c3c6d2",
+                      "tertiary-fixed-dim": "#d9c2b0",
+                      "on-primary": "#2d303a",
+                      "background": "#131314",
+                      "on-background": "#e5e2e2",
+                      "inverse-primary": "#5b5e69",
+                      "surface": "#131314",
+                      "error": "#ffb4ab",
+                      "outline": "#909096",
+                      "secondary": "#bec6e1",
+                      "on-primary-fixed-variant": "#434751",
+                      "on-error-container": "#ffdad6",
+                      "on-primary-container": "#757883",
+                      "on-secondary-fixed": "#131b2f",
+                      "persona-specialist": "#22d3ee",
+                      "token-agent": "#10b981",
+                      "tertiary": "#d9c2b0",
+                      "error-container": "#93000a",
+                      "secondary-fixed-dim": "#bec6e1",
+                      "surface-dim": "#131314",
+                      "on-tertiary-fixed-variant": "#534436",
+                      "surface-variant": "#353435",
+                      "on-secondary-container": "#b0b8d2",
+                      "surface-container-lowest": "#0e0e0f",
+                      "persona-employee": "#22c55e",
+                      "outline-variant": "#45464b",
+                      "inverse-on-surface": "#313031",
+                      "primary": "#c3c6d2",
+                      "data-highlight": "#facc15",
+                      "on-tertiary-fixed": "#25190e",
+                      "secondary-fixed": "#dae2fe",
+                      "persona-hr": "#fbbf24",
+                      "on-secondary-fixed-variant": "#3f465c",
+                      "inverse-surface": "#e5e2e2",
+                      "token-id-jag": "#8b5cf6",
+                      "tertiary-container": "#0f0601",
+                      "technical-cyan": "#22d3ee",
+                      "brand-primary": "#10b981",
+                      "brand-secondary": "#3b82f6"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "margin-page": "40px",
+                      "gutter": "24px",
+                      "stack-lg": "32px",
+                      "stack-sm": "8px",
+                      "stack-md": "16px",
+                      "container-max": "1280px"
+              },
+              "fontFamily": {
+                      "display-lg": ["DM Sans"],
+                      "headline-md": ["DM Sans"],
+                      "body-md": ["DM Sans"],
+                      "code-sm": ["JetBrains Mono"],
+                      "label-caps": ["JetBrains Mono"]
+              },
+              "fontSize": {
+                      "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                      "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                      "code-sm": ["13px", {"lineHeight": "20px", "fontWeight": "500"}],
+                      "label-caps": ["11px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}]
+              }
+            },
+          },
+        }
+    </script>
+</head>
+<body class="circuit-grid text-on-background font-body-md min-h-screen">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-background/60 backdrop-blur-xl border-b border-outline-variant/20 h-20 flex justify-between items-center px-margin-page">
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-brand-primary text-3xl">hub</span>
+<div class="flex flex-col leading-none">
+<span class="font-display-lg text-xl font-bold text-on-surface tracking-tight">Benefits Portal</span>
+<span class="font-label-caps text-[9px] text-brand-secondary">SECURED BY OKTA</span>
+</div>
+</div>
+</div>
+<nav class="hidden md:flex gap-gutter">
+<a class="text-on-surface-variant font-medium hover:text-brand-primary transition-colors duration-200 font-body-md text-body-md" href="#">Dashboard</a>
+<a class="text-brand-primary font-bold border-b-2 border-brand-primary pb-1 font-body-md text-body-md" href="#">Flows</a>
+<a class="text-on-surface-variant font-medium hover:text-brand-primary transition-colors duration-200 font-body-md text-body-md" href="#">Authorization Traces</a>
+<a class="text-on-surface-variant font-medium hover:text-brand-primary transition-colors duration-200 font-body-md text-body-md" href="#">Persona Manager</a>
+<a class="text-on-surface-variant font-medium hover:text-brand-primary transition-colors duration-200 font-body-md text-body-md" href="#">JWT Decoder</a>
+</nav>
+<div class="flex items-center gap-stack-md">
+<div class="flex items-center gap-stack-sm bg-surface-container-low rounded-full pr-4 pl-1 py-1 border border-outline-variant/20">
+<img alt="Sarah" class="w-8 h-8 rounded-full border border-brand-primary/50" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBRchOjnqTLeCrC5rjhDkQike2erDUm07-8LIAqwb94Wr_LSCk3a8wegIJIFEZTRQoSgYU6YOgcSwLMJROzCndVeFLUZVnU8vVdK1oFEn5OVRw7piAUjsfUMnqh2yAkfZkOeZxd_ZBATmoq48LcBn4p6_fr1ju6ShSvyKZVucW7pWfOc_iKoBrAbk1ccsOLDwh-0t88XA3fmqxnAa_AsfdRXfI5dreh83EPDazxljVyCCUrUVLKumNh10Z7y2evZjdRWRb8xylHJxE"/>
+<div class="flex flex-col">
+<span class="font-label-caps text-[10px] text-on-surface leading-none">Sarah Jenkins</span>
+<span class="font-label-caps text-[8px] text-brand-primary uppercase">Benefits Specialist</span>
+</div>
+</div>
+<button class="bg-brand-primary text-white font-label-caps px-4 py-2 rounded-full hover:shadow-[0_0_15px_rgba(16,185,129,0.3)] transition-all active:scale-95">Run Scan</button>
+</div>
+</header>
+<!-- SideNavBar -->
+<aside class="h-screen w-64 fixed left-0 top-0 border-r border-outline-variant/30 bg-surface-container-low/40 backdrop-blur-lg shadow-xl flex flex-col py-stack-lg z-40 hidden lg:flex">
+<div class="px-6 mb-10 mt-20">
+<div class="flex items-center gap-stack-sm mb-2">
+<span class="material-symbols-outlined text-brand-primary" style="font-variation-settings: 'FILL' 1;">security</span>
+<span class="text-on-surface font-bold font-label-caps tracking-wider">Operator Console</span>
+</div>
+<div class="text-on-surface-variant opacity-60 text-[9px] uppercase tracking-[0.2em] font-label-caps">Level 4 Access</div>
+</div>
+<nav class="flex flex-col gap-2">
+<div class="text-on-surface-variant hover:bg-white/5 transition-all mx-2 p-3 rounded-xl flex items-center gap-4 cursor-pointer group">
+<span class="material-symbols-outlined group-hover:text-brand-primary">shield_person</span>
+<span class="font-label-caps text-label-caps">Identity</span>
+</div>
+<div class="bg-brand-primary/10 text-brand-primary border border-brand-primary/20 rounded-xl mx-2 p-3 flex items-center gap-4 cursor-pointer">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">account_tree</span>
+<span class="font-label-caps text-label-caps">Flows</span>
+</div>
+<div class="text-on-surface-variant hover:bg-white/5 transition-all mx-2 p-3 rounded-xl flex items-center gap-4 cursor-pointer group">
+<span class="material-symbols-outlined group-hover:text-brand-primary">list_alt</span>
+<span class="font-label-caps text-label-caps">Traces</span>
+</div>
+<div class="text-on-surface-variant hover:bg-white/5 transition-all mx-2 p-3 rounded-xl flex items-center gap-4 cursor-pointer group">
+<span class="material-symbols-outlined group-hover:text-brand-primary">terminal</span>
+<span class="font-label-caps text-label-caps">Logs</span>
+</div>
+</nav>
+</aside>
+<main class="lg:ml-64 pt-24 pb-stack-lg px-margin-page">
+<!-- Hero Header -->
+<section class="mb-stack-lg">
+<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-brand-primary/30 bg-brand-primary/10 mb-stack-sm backdrop-blur-md">
+<span class="material-symbols-outlined text-[12px] text-brand-primary">analytics</span>
+<span class="font-label-caps text-on-surface text-[9px] tracking-wider uppercase">Deep Signal Inspection</span>
+</div>
+<h1 class="font-display-lg text-display-lg text-on-background mb-stack-sm">Token Flow Visualizer</h1>
+<p class="text-on-surface-variant max-w-2xl font-body-md">Analyze the cryptographically secured signal path between Sarah's identity, the secure gateway, and the HR agent runtime.</p>
+</section>
+<!-- Visualization Canvas -->
+<div class="relative min-h-[500px] w-full glass-card rounded-2xl p-stack-lg flex items-center justify-between overflow-hidden shadow-2xl glow-soft">
+<!-- Context Step Labels -->
+<div class="absolute top-12 left-0 w-full flex justify-between px-20">
+<div class="bg-brand-secondary/10 border border-brand-secondary/20 px-3 py-1 rounded-full flex items-center gap-2">
+<span class="w-1 h-1 rounded-full bg-brand-secondary"></span>
+<span class="font-label-caps text-[9px] text-on-surface">Validating Sarah's Session</span>
+</div>
+<div class="bg-brand-primary/10 border border-brand-primary/20 px-3 py-1 rounded-full flex items-center gap-2">
+<span class="w-1 h-1 rounded-full bg-brand-primary"></span>
+<span class="font-label-caps text-[9px] text-on-surface">Mapping Scopes for AI</span>
+</div>
+</div>
+<!-- Flow SVG Lines -->
+<svg class="absolute inset-0 w-full h-full pointer-events-none" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<lineargradient id="grad1" x1="0%" x2="100%" y1="0%" y2="0%">
+<stop offset="0%" stop-color="#3b82f6"></stop>
+<stop offset="100%" stop-color="#8b5cf6"></stop>
+</lineargradient>
+<lineargradient id="grad2" x1="0%" x2="100%" y1="0%" y2="0%">
+<stop offset="0%" stop-color="#8b5cf6"></stop>
+<stop offset="100%" stop-color="#10b981"></stop>
+</lineargradient>
+</defs>
+<path class="flow-line" d="M220 250 L430 250" fill="none" stroke="url(#grad1)" stroke-width="2"></path>
+<path class="flow-line" d="M570 250 L780 250" fill="none" stroke="url(#grad2)" stroke-width="2"></path>
+<!-- Connection Labels -->
+<text class="uppercase tracking-widest font-bold" fill="#c6c6cc" font-family="JetBrains Mono" font-size="9" x="250" y="235">EXCHANGING SESSION → AI ACCESS</text>
+<text class="uppercase tracking-widest font-bold" fill="#c6c6cc" font-family="JetBrains Mono" font-size="9" x="600" y="235">CONSTRUCTING AGENT ASSERTION</text>
+</svg>
+<!-- Node 1: ID Token -->
+<div class="relative z-10 flex flex-col items-center gap-stack-md group w-1/4">
+<div class="w-32 h-32 rounded-2xl glass-card flex items-center justify-center text-token-id animate-pulse-glow transition-all duration-500 cursor-pointer hover:scale-110 active:scale-95 border-token-id/30" onclick="toggleJWT('jwt1')">
+<span class="material-symbols-outlined text-5xl" style="font-variation-settings: 'FILL' 1;">fingerprint</span>
+</div>
+<div class="text-center">
+<div class="font-label-caps text-label-caps text-token-id tracking-widest">ORIGIN</div>
+<div class="font-headline-md text-headline-md text-on-background">Employee ID</div>
+</div>
+<!-- JWT Claims Panel -->
+<div class="hidden absolute top-40 w-64 glass-card rounded-xl p-4 shadow-2xl z-20" id="jwt1">
+<div class="flex justify-between items-center mb-2 border-b border-outline-variant/20 pb-1">
+<span class="font-label-caps text-[9px] text-on-surface-variant">DECODED JWT</span>
+<span class="material-symbols-outlined text-sm cursor-pointer" onclick="toggleJWT('jwt1')">close</span>
+</div>
+<pre class="font-code-sm text-code-sm leading-relaxed overflow-x-auto">{
+  "<span class="text-data-highlight">sub</span>": "sarah_j",
+  "iss": "okta.auth.v1",
+  "<span class="text-data-highlight">role</span>": "spec_benefits",
+  "iat": 17154320
+}</pre>
+</div>
+</div>
+<!-- Node 2: ID-JAG -->
+<div class="relative z-10 flex flex-col items-center gap-stack-md group w-1/4">
+<div class="w-32 h-32 rounded-2xl glass-card flex items-center justify-center text-token-id-jag animate-pulse-glow transition-all duration-500 cursor-pointer hover:scale-110 active:scale-95 border-token-id-jag/30" onclick="toggleJWT('jwt2')" style="animation-delay: 0.5s">
+<span class="material-symbols-outlined text-5xl" style="font-variation-settings: 'FILL' 1;">hub</span>
+</div>
+<div class="text-center">
+<div class="font-label-caps text-label-caps text-token-id-jag tracking-widest">GATEWAY</div>
+<div class="font-headline-md text-headline-md text-on-background">ID-JAG</div>
+</div>
+<!-- JWT Claims Panel -->
+<div class="hidden absolute top-40 w-64 glass-card rounded-xl p-4 shadow-2xl z-20" id="jwt2">
+<div class="flex justify-between items-center mb-2 border-b border-outline-variant/20 pb-1">
+<span class="font-label-caps text-[9px] text-on-surface-variant">BRIDGE ASSERTION</span>
+<span class="material-symbols-outlined text-sm cursor-pointer" onclick="toggleJWT('jwt2')">close</span>
+</div>
+<pre class="font-code-sm text-code-sm leading-relaxed">{
+  "<span class="text-data-highlight">on_behalf</span>": "sarah_j",
+  "<span class="text-data-highlight">bridge</span>": "okta_jag",
+  "aud": "hr_agent_v4"
+}</pre>
+</div>
+</div>
+<!-- Node 3: Agent Access Token -->
+<div class="relative z-10 flex flex-col items-center gap-stack-md group w-1/4">
+<div class="w-32 h-32 rounded-2xl glass-card flex items-center justify-center text-token-agent animate-pulse-glow transition-all duration-500 cursor-pointer hover:scale-110 active:scale-95 border-token-agent/30" onclick="toggleJWT('jwt3')" style="animation-delay: 1s">
+<span class="material-symbols-outlined text-5xl" style="font-variation-settings: 'FILL' 1;">smart_toy</span>
+</div>
+<div class="text-center">
+<div class="font-label-caps text-label-caps text-token-agent tracking-widest">EXECUTION</div>
+<div class="font-headline-md text-headline-md text-on-background">AI Runtime</div>
+</div>
+<!-- JWT Claims Panel -->
+<div class="hidden absolute top-40 w-64 glass-card rounded-xl p-4 shadow-2xl z-20" id="jwt3">
+<div class="flex justify-between items-center mb-2 border-b border-outline-variant/20 pb-1">
+<span class="font-label-caps text-[9px] text-on-surface-variant">AGENT TOKEN</span>
+<span class="material-symbols-outlined text-sm cursor-pointer" onclick="toggleJWT('jwt3')">close</span>
+</div>
+<pre class="font-code-sm text-code-sm leading-relaxed">{
+  "<span class="text-data-highlight">sub</span>": "ai_concierge",
+  "<span class="text-data-highlight">scp</span>": ["benefits.read"],
+  "ctx": "context_aware_v2"
+}</pre>
+</div>
+</div>
+</div>
+<!-- Scope Transformation Section -->
+<section class="mt-stack-lg">
+<div class="glass-card rounded-2xl overflow-hidden shadow-2xl">
+<div class="p-6 border-b border-outline-variant/20 flex justify-between items-center">
+<div>
+<h2 class="font-headline-md text-headline-md text-on-surface mb-1">Scope Policy Transformation</h2>
+<p class="text-on-surface-variant font-body-md text-sm">Translating Sarah's persona into granular AI agent permissions.</p>
+</div>
+<div class="flex items-center gap-2 bg-brand-primary/10 px-3 py-1 rounded-full border border-brand-primary/20">
+<span class="w-2 h-2 rounded-full bg-status-allow animate-pulse"></span>
+<span class="font-label-caps text-[10px] text-on-surface">GOVERNANCE ACTIVE</span>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 divide-x divide-outline-variant/20">
+<!-- Column 1: User Role Scope -->
+<div class="p-8">
+<div class="flex items-center gap-3 mb-6">
+<div class="w-10 h-10 rounded-xl bg-brand-secondary/10 text-brand-secondary flex items-center justify-center border border-brand-secondary/20">
+<span class="material-symbols-outlined">person</span>
+</div>
+<div>
+<div class="font-label-caps text-[10px] text-on-surface-variant">PERSONA SOURCE</div>
+<div class="font-body-md font-bold text-on-surface">Benefits Specialist Role</div>
+</div>
+</div>
+<div class="space-y-3">
+<div class="flex justify-between items-center p-4 rounded-xl bg-white/5 border border-outline-variant/10">
+<code class="font-code-sm text-code-sm text-on-surface">openid profile email</code>
+<span class="material-symbols-outlined text-status-allow text-sm">check_circle</span>
+</div>
+<div class="flex justify-between items-center p-4 rounded-xl bg-white/5 border border-outline-variant/10">
+<code class="font-code-sm text-code-sm text-on-surface">benefits.read</code>
+<span class="material-symbols-outlined text-status-allow text-sm">check_circle</span>
+</div>
+<div class="flex justify-between items-center p-4 rounded-xl bg-white/5 border border-outline-variant/10 opacity-30">
+<code class="font-code-sm text-code-sm text-on-surface">payroll.admin</code>
+<span class="material-symbols-outlined text-status-deny text-sm">cancel</span>
+</div>
+</div>
+</div>
+<!-- Column 2: Agent Received Scopes -->
+<div class="p-8 bg-brand-primary/5">
+<div class="flex items-center gap-3 mb-6">
+<div class="w-10 h-10 rounded-xl bg-brand-primary/10 text-brand-primary flex items-center justify-center border border-brand-primary/20">
+<span class="material-symbols-outlined">shield_with_heart</span>
+</div>
+<div>
+<div class="font-label-caps text-[10px] text-on-surface-variant">DERIVED PERMISSIONS</div>
+<div class="font-body-md font-bold text-on-surface">AI Agent Runtime Scopes</div>
+</div>
+</div>
+<div class="space-y-3">
+<div class="flex justify-between items-center p-4 rounded-xl bg-brand-primary/10 border border-brand-primary/20">
+<div class="flex items-center gap-2">
+<span class="w-1 h-1 rounded-full bg-brand-primary"></span>
+<code class="font-code-sm text-code-sm text-on-surface">read:employee_health</code>
+</div>
+<span class="font-label-caps text-[9px] text-brand-primary font-bold">MAPPED</span>
+</div>
+<div class="flex justify-between items-center p-4 rounded-xl bg-brand-primary/10 border border-brand-primary/20">
+<div class="flex items-center gap-2">
+<span class="w-1 h-1 rounded-full bg-brand-primary"></span>
+<code class="font-code-sm text-code-sm text-on-surface">exec:summary_gen</code>
+</div>
+<span class="font-label-caps text-[9px] text-brand-primary font-bold">SYNTHESIZED</span>
+</div>
+<div class="flex justify-between items-center p-4 rounded-xl bg-brand-primary/10 border border-brand-primary/20">
+<div class="flex items-center gap-2">
+<span class="w-1 h-1 rounded-full bg-brand-primary"></span>
+<code class="font-code-sm text-code-sm text-on-surface">auth:context_check</code>
+</div>
+<span class="font-label-caps text-[9px] text-brand-primary font-bold">ENFORCED</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="lg:ml-64 bg-surface-container-lowest border-t border-outline-variant/10 w-full py-stack-lg px-margin-page flex flex-col md:flex-row justify-between items-center gap-stack-md mt-auto">
+<div class="flex flex-col">
+<div class="font-label-caps text-on-surface text-sm">Benefits Portal Ops</div>
+<div class="font-code-sm text-[10px] text-on-surface-variant opacity-60">Signal Intelligence v2.4.0 (Stable)</div>
+</div>
+<div class="flex gap-stack-lg">
+<a class="text-on-surface-variant hover:text-brand-primary transition-all font-body-md text-sm" href="#">Help Center</a>
+<a class="text-on-surface-variant hover:text-brand-primary transition-all font-body-md text-sm" href="#">Security Policy</a>
+<a class="text-on-surface-variant hover:text-brand-primary transition-all font-body-md text-sm" href="#">API Reference</a>
+</div>
+<div class="text-on-surface-variant font-code-sm text-xs opacity-50">© 2024 Secured by Okta for AI</div>
+</footer>
+<script>
+    function toggleJWT(id) {
+        const el = document.getElementById(id);
+        const panels = ['jwt1', 'jwt2', 'jwt3'];
+        panels.forEach(p => {
+            if(p !== id) document.getElementById(p).classList.add('hidden');
+        });
+        el.classList.toggle('hidden');
+    }
+
+    document.querySelectorAll('.animate-pulse-glow').forEach(node => {
+        node.addEventListener('mouseenter', () => {
+            node.style.transform = 'scale(1.05)';
+        });
+        node.addEventListener('mouseleave', () => {
+            node.style.transform = 'scale(1)';
+        });
+    });
+</script>
+</body></html>

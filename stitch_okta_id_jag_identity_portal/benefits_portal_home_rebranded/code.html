@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Secured by Okta for AI - Benefits Portal</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&amp;family=JetBrains+Mono:wght@500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        body {
+            background-color: #0e0e0f;
+            color: #e5e2e2;
+            overflow-x: hidden;
+        }
+        .circuit-grid {
+            background-image: 
+                radial-gradient(circle at 2px 2px, rgba(195, 198, 210, 0.03) 1px, transparent 0);
+            background-size: 40px 40px;
+        }
+        .glass-card {
+            background: rgba(32, 31, 32, 0.6);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(144, 144, 150, 0.15);
+        }
+        .glow-soft {
+            box-shadow: 0 0 30px rgba(16, 185, 129, 0.05), 0 0 10px rgba(59, 130, 246, 0.05);
+        }
+        .persona-row:hover {
+            background: rgba(69, 70, 75, 0.2);
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .hero-gradient {
+            background: linear-gradient(to bottom, rgba(14, 14, 15, 0.8), rgba(14, 14, 15, 0.95)), 
+                        url('https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80&w=2000');
+            background-size: cover;
+            background-position: center;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface-container-highest": "#353435",
+                      "status-allow": "#10b981",
+                      "on-primary-fixed": "#181c24",
+                      "primary-fixed": "#e0e2ee",
+                      "on-tertiary": "#3c2e21",
+                      "tertiary-fixed": "#f6decc",
+                      "on-tertiary-container": "#887565",
+                      "surface-container-low": "#1c1b1c",
+                      "primary-container": "#050810",
+                      "surface-tint": "#c3c6d2",
+                      "on-surface": "#e5e2e2",
+                      "on-surface-variant": "#c6c6cc",
+                      "status-deny": "#ef4444",
+                      "on-error": "#690005",
+                      "surface-container-high": "#2a2a2a",
+                      "secondary-container": "#41495f",
+                      "token-id": "#3b82f6",
+                      "surface-bright": "#3a393a",
+                      "persona-manager": "#a855f7",
+                      "surface-container": "#201f20",
+                      "on-secondary": "#283045",
+                      "primary-fixed-dim": "#c3c6d2",
+                      "tertiary-fixed-dim": "#d9c2b0",
+                      "on-primary": "#2d303a",
+                      "background": "#131314",
+                      "on-background": "#e5e2e2",
+                      "inverse-primary": "#5b5e69",
+                      "surface": "#131314",
+                      "error": "#ffb4ab",
+                      "outline": "#909096",
+                      "secondary": "#bec6e1",
+                      "on-primary-fixed-variant": "#434751",
+                      "on-error-container": "#ffdad6",
+                      "on-primary-container": "#757883",
+                      "on-secondary-fixed": "#131b2f",
+                      "persona-specialist": "#22d3ee",
+                      "token-agent": "#10b981",
+                      "tertiary": "#d9c2b0",
+                      "error-container": "#93000a",
+                      "secondary-fixed-dim": "#bec6e1",
+                      "surface-dim": "#131314",
+                      "on-tertiary-fixed-variant": "#534436",
+                      "surface-variant": "#353435",
+                      "on-secondary-container": "#b0b8d2",
+                      "surface-container-lowest": "#0e0e0f",
+                      "persona-employee": "#22c55e",
+                      "outline-variant": "#45464b",
+                      "inverse-on-surface": "#313031",
+                      "primary": "#c3c6d2",
+                      "data-highlight": "#facc15",
+                      "on-tertiary-fixed": "#25190e",
+                      "secondary-fixed": "#dae2fe",
+                      "persona-hr": "#fbbf24",
+                      "on-secondary-fixed-variant": "#3f465c",
+                      "inverse-surface": "#e5e2e2",
+                      "token-id-jag": "#8b5cf6",
+                      "tertiary-container": "#0f0601",
+                      "technical-cyan": "#22d3ee",
+                      "brand-primary": "#10b981",
+                      "brand-secondary": "#3b82f6"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "margin-page": "40px",
+                      "gutter": "24px",
+                      "stack-lg": "32px",
+                      "stack-sm": "8px",
+                      "stack-md": "16px",
+                      "container-max": "1280px"
+              },
+              "fontFamily": {
+                      "display-lg": ["DM Sans"],
+                      "headline-md": ["DM Sans"],
+                      "body-md": ["DM Sans"],
+                      "code-sm": ["JetBrains Mono"],
+                      "label-caps": ["JetBrains Mono"]
+              },
+              "fontSize": {
+                      "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                      "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                      "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                      "code-sm": ["13px", { "lineHeight": "20px", "fontWeight": "500" }],
+                      "label-caps": ["11px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700" }]
+              }
+            },
+          },
+        }
+    </script>
+</head>
+<body class="circuit-grid min-h-screen selection:bg-brand-primary selection:text-white">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-background/60 backdrop-blur-xl border-b border-outline-variant/20 h-20 flex justify-between items-center px-margin-page">
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-brand-primary text-3xl">hub</span>
+<div class="flex flex-col leading-none">
+<span class="font-display-lg text-xl font-bold text-on-surface tracking-tight">Benefits Portal</span>
+<span class="font-label-caps text-[9px] text-brand-secondary">SECURED BY OKTA</span>
+</div>
+</div>
+</div>
+<nav class="hidden md:flex gap-gutter">
+<a class="text-brand-primary font-bold border-b-2 border-brand-primary pb-1 font-body-md text-body-md" href="#">Dashboard</a>
+<a class="text-on-surface-variant font-medium hover:text-brand-primary transition-colors duration-200 font-body-md text-body-md" href="#">Authorization Traces</a>
+<a class="text-on-surface-variant font-medium hover:text-brand-primary transition-colors duration-200 font-body-md text-body-md" href="#">Persona Manager</a>
+<a class="text-on-surface-variant font-medium hover:text-brand-primary transition-colors duration-200 font-body-md text-body-md" href="#">JWT Decoder</a>
+</nav>
+<div class="flex items-center gap-stack-md">
+<div class="flex items-center gap-stack-sm bg-surface-container-low rounded-full pr-4 pl-1 py-1 border border-outline-variant/20">
+<img alt="Sarah" class="w-8 h-8 rounded-full border border-brand-primary/50" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBRchOjnqTLeCrC5rjhDkQike2erDUm07-8LIAqwb94Wr_LSCk3a8wegIJIFEZTRQoSgYU6YOgcSwLMJROzCndVeFLUZVnU8vVdK1oFEn5OVRw7piAUjsfUMnqh2yAkfZkOeZxd_ZBATmoq48LcBn4p6_fr1ju6ShSvyKZVucW7pWfOc_iKoBrAbk1ccsOLDwh-0t88XA3fmqxnAa_AsfdRXfI5dreh83EPDazxljVyCCUrUVLKumNh10Z7y2evZjdRWRb8xylHJxE"/>
+<div class="flex flex-col">
+<span class="font-label-caps text-[10px] text-on-surface leading-none">Sarah Jenkins</span>
+<span class="font-label-caps text-[8px] text-brand-primary uppercase">Benefits Specialist</span>
+</div>
+</div>
+<button class="bg-brand-primary text-white font-label-caps px-4 py-2 rounded-full hover:shadow-[0_0_15px_rgba(16,185,129,0.3)] transition-all active:scale-95">Run Scan</button>
+</div>
+</header>
+<main class="relative">
+<!-- Hero Section with Background -->
+<section class="hero-gradient pt-48 pb-32 px-margin-page flex flex-col items-center text-center relative border-b border-outline-variant/10">
+<div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-brand-primary/30 bg-brand-primary/10 mb-stack-md backdrop-blur-md">
+<span class="material-symbols-outlined text-[14px] text-brand-primary">verified_user</span>
+<span class="font-label-caps text-on-surface text-[10px]">Context-Aware Governance Engine</span>
+</div>
+<h1 class="font-display-lg text-display-lg max-w-3xl mb-stack-md leading-[1.1] tracking-tight">
+            Protecting employee data with <span class="text-brand-primary italic">precision</span> access
+        </h1>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-2xl mb-stack-lg leading-relaxed">
+            Every access request to sensitive payroll and medical benefits is cryptographically verified. Real-time authorization for AI agents ensures zero-trust governance.
+        </p>
+<div class="flex gap-4">
+<button class="bg-brand-primary text-white px-10 py-4 rounded-full font-headline-md text-lg flex items-center gap-3 hover:shadow-[0_0_25px_rgba(16,185,129,0.4)] transition-all active:scale-95">
+                Start Demo
+                <span class="material-symbols-outlined">arrow_forward</span>
+</button>
+<button class="glass-card px-10 py-4 rounded-full font-headline-md text-lg text-on-surface hover:bg-white/5 transition-all">
+                View Live Traces
+            </button>
+</div>
+</section>
+<div class="max-w-container-max mx-auto px-margin-page -mt-16 relative z-10 pb-20">
+<!-- Persona Manager Section -->
+<section class="glass-card rounded-2xl p-stack-lg overflow-hidden shadow-2xl glow-soft">
+<div class="flex justify-between items-end mb-stack-lg">
+<div>
+<h2 class="font-headline-md text-headline-md text-on-surface mb-1">Active Roles &amp; Personas</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Configured authorization ceilings for the Benefits Portal</p>
+</div>
+<div class="flex gap-2">
+<span class="font-label-caps text-brand-primary bg-brand-primary/10 border border-brand-primary/20 px-3 py-1 rounded-full text-[10px]">5 ACTIVE NODES</span>
+</div>
+</div>
+<div class="w-full overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="border-b border-outline-variant/20 font-label-caps text-on-surface-variant text-[11px]">
+<th class="py-4 px-4 font-normal">PERSONA</th>
+<th class="py-4 px-4 font-normal">ACCESS CEILING</th>
+<th class="py-4 px-4 font-normal text-right">TRUST STATUS</th>
+</tr>
+</thead>
+<tbody class="font-body-md text-body-md">
+<!-- Row 1: HR Admin -->
+<tr class="persona-row border-b border-outline-variant/10 transition-colors">
+<td class="py-6 px-4">
+<div class="flex items-center gap-4">
+<img alt="Marcus Chen" class="w-12 h-12 rounded-full border-2 border-persona-hr" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD1cCFTGL07isSY6JS-QM4pjqTbE3UJAzitey5wXdhR_dxfPE_Z6sEgFyk7XxcVfgaAIfY3V_KnmB0arbEY9y7GnvK7fEHd5y3B_uc3SX8LspX7RxT5aDV61T_IofJnM1T33ZhTj5NKQhKiBpCsGsQCr-ftwWNt6l4YW52FYVTz5hOwxdbU6pmyULkGr_BuKklPGYx7MCS4RczvzDIa_-eD9jv5UqurWnqqMbvSlBmUDb0SJe30HJWkL_rmAMBLCi8hvjGKiywDqfI"/>
+<div class="flex flex-col">
+<span class="font-bold text-on-surface">Marcus Chen</span>
+<span class="bg-persona-hr/10 text-persona-hr px-2 py-0.5 rounded-full font-label-caps text-[9px] w-fit">HR ADMIN</span>
+</div>
+</div>
+</td>
+<td class="py-6 px-4">
+<div class="flex flex-wrap gap-2">
+<span class="font-code-sm text-code-sm bg-surface-container-high px-2 py-1 rounded text-on-surface-variant border border-outline-variant/10">payroll.full_access</span>
+<span class="font-code-sm text-code-sm bg-surface-container-high px-2 py-1 rounded text-on-surface-variant border border-outline-variant/10">pii.global.read</span>
+</div>
+</td>
+<td class="py-6 px-4 text-right">
+<span class="material-symbols-outlined text-brand-primary">verified</span>
+</td>
+</tr>
+<!-- Row 2: Benefits Specialist -->
+<tr class="persona-row border-b border-outline-variant/10 transition-colors">
+<td class="py-6 px-4">
+<div class="flex items-center gap-4">
+<img alt="Sarah Jenkins" class="w-12 h-12 rounded-full border-2 border-brand-secondary" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA8EQOsKIbMmEYTPnGaz4i1jKgeYpkNUPstlFPV_MjKAiBEaduQPWFMua1Z9BoPby9Xg4lSX53l92dQiRd46DTbbM8n6hA8degFbDEXDxktQV-6k3VcnlpGOqhSNugS9e8Py4vg2Ypdx9HViUe7Um77xd04D2sL66awlQPt3JwTADM8sTW6pFKeoqKUdjxAbMROxvisxmMgVlDMukYtItRmwShu_XyaO5Tei_25gHOtsy8s5a0wMrUOEgLeV9Ij3qFxRnXlJNozzTM"/>
+<div class="flex flex-col">
+<span class="font-bold text-on-surface">Sarah Jenkins</span>
+<span class="bg-brand-secondary/10 text-brand-secondary px-2 py-0.5 rounded-full font-label-caps text-[9px] w-fit">BENEFITS SPECIALIST</span>
+</div>
+</div>
+</td>
+<td class="py-6 px-4">
+<div class="flex flex-wrap gap-2">
+<span class="font-code-sm text-code-sm bg-surface-container-high px-2 py-1 rounded text-on-surface-variant border border-outline-variant/10">benefits.read</span>
+<span class="font-code-sm text-code-sm bg-surface-container-high px-2 py-1 rounded text-on-surface-variant border border-outline-variant/10">health.records.view</span>
+</div>
+</td>
+<td class="py-6 px-4 text-right">
+<span class="material-symbols-outlined text-brand-primary">verified</span>
+</td>
+</tr>
+<!-- Row 3: Service Agent -->
+<tr class="persona-row transition-colors">
+<td class="py-6 px-4">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-brand-primary/10 border-2 border-brand-primary flex items-center justify-center text-brand-primary">
+<span class="material-symbols-outlined text-2xl">smart_toy</span>
+</div>
+<div class="flex flex-col">
+<span class="font-bold text-on-surface">LLM-Concierge-v4</span>
+<span class="bg-brand-primary/10 text-brand-primary px-2 py-0.5 rounded-full font-label-caps text-[9px] w-fit">VIRTUAL ASSISTANT</span>
+</div>
+</div>
+</td>
+<td class="py-6 px-4">
+<div class="flex flex-wrap gap-2">
+<span class="font-code-sm text-code-sm bg-brand-primary/5 px-2 py-1 rounded text-brand-primary border border-brand-primary/20">intent.processing</span>
+<span class="font-code-sm text-code-sm bg-brand-primary/5 px-2 py-1 rounded text-brand-primary border border-brand-primary/20">ephemeral.read</span>
+</div>
+</td>
+<td class="py-6 px-4 text-right">
+<span class="material-symbols-outlined text-brand-primary animate-pulse">lock</span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<!-- Feature Grid (Bento Style) -->
+<section class="grid grid-cols-1 md:grid-cols-3 gap-gutter mt-stack-lg">
+<div class="glass-card p-stack-md rounded-2xl md:col-span-2">
+<div class="flex items-center justify-between mb-stack-md">
+<div class="flex items-center gap-stack-sm">
+<span class="material-symbols-outlined text-brand-secondary">history</span>
+<h3 class="font-headline-md text-headline-md">Secure Transaction Feed</h3>
+</div>
+<span class="text-[10px] font-label-caps text-on-surface-variant px-2 py-1 bg-white/5 rounded">Verifying access to payroll data...</span>
+</div>
+<div class="space-y-stack-sm">
+<div class="flex items-center justify-between p-4 rounded-xl bg-white/5 border border-outline-variant/10 hover:border-brand-primary/30 transition-all">
+<div class="flex items-center gap-4">
+<span class="w-2 h-2 rounded-full bg-brand-primary shadow-[0_0_8px_rgba(16,185,129,0.5)]"></span>
+<div class="flex flex-col">
+<span class="font-code-sm text-on-surface">RETRIEVE /payroll/compensation/sarah-j</span>
+<span class="text-[10px] text-on-surface-variant uppercase font-label-caps">Verified Sarah's session via ID-JAG assertion</span>
+</div>
+</div>
+<span class="font-code-sm text-brand-primary">AUTHORIZED</span>
+</div>
+<div class="flex items-center justify-between p-4 rounded-xl bg-white/5 border border-outline-variant/10">
+<div class="flex items-center gap-4">
+<span class="w-2 h-2 rounded-full bg-status-deny shadow-[0_0_8px_rgba(239,68,68,0.5)]"></span>
+<div class="flex flex-col">
+<span class="font-code-sm text-on-surface">UPDATE /payroll/global-rates</span>
+<span class="text-[10px] text-on-surface-variant uppercase font-label-caps">Attempted by non-admin role: SPECIALIST</span>
+</div>
+</div>
+<span class="font-code-sm text-status-deny">DENIED</span>
+</div>
+</div>
+</div>
+<div class="glass-card p-stack-md rounded-2xl flex flex-col justify-center items-center text-center glow-soft border-brand-primary/10">
+<div class="w-20 h-20 rounded-full bg-brand-primary/10 flex items-center justify-center mb-stack-md">
+<span class="material-symbols-outlined text-brand-primary text-4xl" style="font-variation-settings: 'FILL' 1;">enhanced_encryption</span>
+</div>
+<h3 class="font-headline-md text-headline-md mb-2">Cryptographic Integrity</h3>
+<p class="font-body-md text-body-md text-on-surface-variant px-4">Continuous verification of session tokens against Okta's global key management service.</p>
+<button class="mt-stack-md text-brand-primary font-label-caps hover:underline transition-all">Audit Security Keys</button>
+</div>
+</section>
+</div>
+</main>
+<!-- Footer -->
+<footer class="w-full py-10 border-t border-outline-variant/10 bg-surface-container-lowest flex flex-col md:flex-row justify-between items-center px-margin-page gap-stack-md">
+<div class="flex items-center gap-stack-md">
+<div class="flex flex-col">
+<span class="font-label-caps text-on-surface">Benefits Portal Ops</span>
+<span class="font-code-sm text-[10px] text-on-surface-variant">Version 2.4.0 (Stable)</span>
+</div>
+</div>
+<nav class="flex gap-stack-md">
+<a class="text-on-surface-variant hover:text-brand-primary transition-all font-body-md text-sm" href="#">Help Center</a>
+<a class="text-on-surface-variant hover:text-brand-primary transition-all font-body-md text-sm" href="#">Security Whitepaper</a>
+<a class="text-on-surface-variant hover:text-brand-primary transition-all font-body-md text-sm" href="#">Privacy Policy</a>
+</nav>
+<div class="text-on-surface-variant font-code-sm text-xs opacity-50">© 2024 Secured by Okta for AI</div>
+</footer>
+<!-- Story Mode Floating Panel -->
+<div class="fixed bottom-10 left-1/2 -translate-x-1/2 w-[calc(100%-80px)] max-w-container-max z-40 transition-all duration-500 ease-in-out" id="story-panel">
+<div class="glass-card rounded-2xl p-8 border-brand-primary/30 shadow-2xl flex flex-col md:flex-row items-center justify-between gap-8 relative overflow-hidden">
+<div class="absolute top-0 left-0 w-1.5 h-full bg-brand-primary"></div>
+<div class="flex-1">
+<div class="flex items-center gap-3 mb-3">
+<span class="bg-brand-primary text-white font-label-caps px-2 py-0.5 rounded-full text-[9px]">DEMO ACTIVE</span>
+<span class="font-label-caps text-on-surface-variant text-[10px]">VERIFYING ACCESS IDENTITY</span>
+</div>
+<h4 class="font-headline-md text-2xl text-on-surface mb-2">Contextual Identity Mapping</h4>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+                As Sarah interacts with the portal, the AI agent's token is <span class="text-brand-primary font-bold">dynamically scoped</span>. Okta verifies that Sarah has the <span class="text-brand-secondary font-bold">BENEFITS_SPECIALIST</span> role before the agent can retrieve any payroll data, ensuring zero privilege escalation.
+            </p>
+</div>
+<div class="flex gap-4 shrink-0">
+<button class="px-8 py-3 glass-card rounded-full font-headline-md text-on-surface hover:bg-white/5 transition-all">Back</button>
+<button class="px-8 py-3 bg-brand-primary text-white rounded-full font-headline-md shadow-lg shadow-brand-primary/20 hover:scale-105 transition-all">Next Step</button>
+</div>
+<button class="absolute top-4 right-4 text-on-surface-variant hover:text-on-surface" onclick="document.getElementById('story-panel').style.opacity = '0'; setTimeout(()=&gt; document.getElementById('story-panel').style.display = 'none', 500)">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+</div>
+<script>
+    // Micro-interaction for table rows
+    document.querySelectorAll('.persona-row').forEach(row => {
+        row.addEventListener('mouseenter', () => {
+            row.style.transform = 'translateY(-1px)';
+            row.style.boxShadow = '0 10px 20px -10px rgba(0,0,0,0.3)';
+            row.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+        });
+        row.addEventListener('mouseleave', () => {
+            row.style.transform = 'translateY(0)';
+            row.style.boxShadow = 'none';
+        });
+    });
+
+    // Pulse animation for critical status
+    const statusIcons = document.querySelectorAll('.animate-pulse');
+    statusIcons.forEach(icon => {
+        icon.style.animationDuration = '3s';
+    });
+</script>
+</body></html>

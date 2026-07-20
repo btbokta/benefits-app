@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Secured by Okta for AI - Benefits Portal</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&amp;family=JetBrains+Mono:wght@500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        body {
+            background-color: #131314;
+            color: #e5e2e2;
+            overflow-x: hidden;
+        }
+        .circuit-grid {
+            background-image: 
+                radial-gradient(circle at 2px 2px, rgba(195, 198, 210, 0.05) 1px, transparent 0);
+            background-size: 40px 40px;
+        }
+        .glass-card {
+            background: rgba(28, 27, 28, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(144, 144, 150, 0.2);
+        }
+        .glow-cyan {
+            box-shadow: 0 0 20px rgba(34, 211, 238, 0.15);
+        }
+        .glow-primary {
+            box-shadow: 0 0 30px rgba(195, 198, 210, 0.1);
+        }
+        .persona-row:hover {
+            background: rgba(53, 52, 53, 0.4);
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface-container-highest": "#353435",
+                      "status-allow": "#10b981",
+                      "on-primary-fixed": "#181c24",
+                      "primary-fixed": "#e0e2ee",
+                      "on-tertiary": "#3c2e21",
+                      "tertiary-fixed": "#f6decc",
+                      "on-tertiary-container": "#887565",
+                      "surface-container-low": "#1c1b1c",
+                      "primary-container": "#050810",
+                      "surface-tint": "#c3c6d2",
+                      "on-surface": "#e5e2e2",
+                      "on-surface-variant": "#c6c6cc",
+                      "status-deny": "#ef4444",
+                      "on-error": "#690005",
+                      "surface-container-high": "#2a2a2a",
+                      "secondary-container": "#41495f",
+                      "token-id": "#3b82f6",
+                      "surface-bright": "#3a393a",
+                      "persona-manager": "#a855f7",
+                      "surface-container": "#201f20",
+                      "on-secondary": "#283045",
+                      "primary-fixed-dim": "#c3c6d2",
+                      "tertiary-fixed-dim": "#d9c2b0",
+                      "on-primary": "#2d303a",
+                      "background": "#131314",
+                      "on-background": "#e5e2e2",
+                      "inverse-primary": "#5b5e69",
+                      "surface": "#131314",
+                      "error": "#ffb4ab",
+                      "outline": "#909096",
+                      "secondary": "#bec6e1",
+                      "on-primary-fixed-variant": "#434751",
+                      "on-error-container": "#ffdad6",
+                      "on-primary-container": "#757883",
+                      "on-secondary-fixed": "#131b2f",
+                      "persona-specialist": "#22d3ee",
+                      "token-agent": "#10b981",
+                      "tertiary": "#d9c2b0",
+                      "error-container": "#93000a",
+                      "secondary-fixed-dim": "#bec6e1",
+                      "surface-dim": "#131314",
+                      "on-tertiary-fixed-variant": "#534436",
+                      "surface-variant": "#353435",
+                      "on-secondary-container": "#b0b8d2",
+                      "surface-container-lowest": "#0e0e0f",
+                      "persona-employee": "#22c55e",
+                      "outline-variant": "#45464b",
+                      "inverse-on-surface": "#313031",
+                      "primary": "#c3c6d2",
+                      "data-highlight": "#facc15",
+                      "on-tertiary-fixed": "#25190e",
+                      "secondary-fixed": "#dae2fe",
+                      "persona-hr": "#fbbf24",
+                      "on-secondary-fixed-variant": "#3f465c",
+                      "inverse-surface": "#e5e2e2",
+                      "token-id-jag": "#8b5cf6",
+                      "tertiary-container": "#0f0601",
+                      "technical-cyan": "#22d3ee"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "margin-page": "40px",
+                      "gutter": "24px",
+                      "stack-lg": "32px",
+                      "stack-sm": "8px",
+                      "stack-md": "16px",
+                      "container-max": "1280px"
+              },
+              "fontFamily": {
+                      "display-lg": ["DM Sans"],
+                      "headline-md": ["DM Sans"],
+                      "body-md": ["DM Sans"],
+                      "code-sm": ["JetBrains Mono"],
+                      "label-caps": ["JetBrains Mono"]
+              },
+              "fontSize": {
+                      "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                      "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                      "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                      "code-sm": ["13px", { "lineHeight": "20px", "fontWeight": "500" }],
+                      "label-caps": ["11px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700" }]
+              }
+            },
+          },
+        }
+    </script>
+</head>
+<body class="circuit-grid min-h-screen selection:bg-primary selection:text-on-primary">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-md border-b border-outline-variant/30 h-20 w-full flex justify-between items-center px-margin-page">
+<div class="flex items-center gap-stack-md">
+<span class="font-display-lg text-display-lg font-bold text-primary tracking-tighter">Secured by Okta for AI</span>
+</div>
+<nav class="hidden md:flex gap-gutter">
+<a class="text-primary font-bold border-b-2 border-primary pb-1 font-body-md text-body-md" href="#">Dashboard</a>
+<a class="text-on-surface-variant font-medium hover:text-primary transition-colors duration-200 font-body-md text-body-md" href="#">Authorization Traces</a>
+<a class="text-on-surface-variant font-medium hover:text-primary transition-colors duration-200 font-body-md text-body-md" href="#">Persona Manager</a>
+<a class="text-on-surface-variant font-medium hover:text-primary transition-colors duration-200 font-body-md text-body-md" href="#">JWT Decoder</a>
+</nav>
+<div class="flex items-center gap-stack-md">
+<div class="flex items-center gap-stack-sm bg-surface-container rounded-full pr-4 pl-1 py-1 border border-outline-variant/30">
+<img class="w-8 h-8 rounded-full border border-persona-specialist" data-alt="A professional close-up portrait of a benefits specialist named Sarah. She has a warm yet authoritative expression, wearing modern business attire. The background is a soft-focus office environment with deep navy and technical cyan lighting accents, maintaining a premium security-focused aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBRchOjnqTLeCrC5rjhDkQike2erDUm07-8LIAqwb94Wr_LSCk3a8wegIJIFEZTRQoSgYU6YOgcSwLMJROzCndVeFLUZVnU8vVdK1oFEn5OVRw7piAUjsfUMnqh2yAkfZkOeZxd_ZBATmoq48LcBn4p6_fr1ju6ShSvyKZVucW7pWfOc_iKoBrAbk1ccsOLDwh-0t88XA3fmqxnAa_AsfdRXfI5dreh83EPDazxljVyCCUrUVLKumNh10Z7y2evZjdRWRb8xylHJxE"/>
+<div class="flex flex-col">
+<span class="font-label-caps text-[10px] text-on-surface leading-none">Sarah</span>
+<span class="font-label-caps text-[9px] text-persona-specialist uppercase">benefits_specialist</span>
+</div>
+</div>
+<button class="bg-primary text-on-primary font-label-caps px-4 py-2 rounded-lg hover:opacity-90 transition-all Active:scale-95">Run Scan</button>
+</div>
+</header>
+<main class="pt-32 pb-20 px-margin-page max-w-container-max mx-auto">
+<!-- Hero Section -->
+<section class="flex flex-col items-center text-center mb-24 relative">
+<div class="absolute -top-20 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-primary/5 blur-[120px] rounded-full -z-10"></div>
+<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-outline-variant/50 bg-surface-container-low mb-stack-md">
+<span class="material-symbols-outlined text-[14px] text-status-allow">verified_user</span>
+<span class="font-label-caps text-on-surface-variant">Zero Trust Authorization Engine</span>
+</div>
+<h1 class="font-display-lg text-display-lg max-w-3xl mb-stack-md leading-[1.1] tracking-tight">
+                Every data access <span class="text-primary italic">authorized</span> by Okta
+            </h1>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-2xl mb-stack-lg">
+                Real-time governance for AI agents. Transform broad permissions into granular, context-aware authorization traces that secure sensitive employee benefits data.
+            </p>
+<div class="flex gap-stack-md">
+<button class="bg-primary text-on-primary px-8 py-4 rounded-xl font-headline-md text-headline-md flex items-center gap-2 hover:opacity-90 transition-all glow-primary">
+                    Start Demo
+                    <span class="material-symbols-outlined">arrow_forward</span>
+</button>
+<button class="border border-outline-variant px-8 py-4 rounded-xl font-headline-md text-headline-md text-on-surface hover:bg-surface-container transition-all">
+                    View Traces
+                </button>
+</div>
+</section>
+<!-- Persona Manager Table -->
+<section class="glass-card rounded-2xl p-stack-lg overflow-hidden relative">
+<div class="flex justify-between items-end mb-stack-lg">
+<div>
+<h2 class="font-headline-md text-headline-md text-primary mb-1">Persona Manager</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Active roles and their maximum authorization ceilings</p>
+</div>
+<div class="flex gap-2">
+<span class="font-label-caps text-on-surface-variant bg-surface-container-high px-2 py-1 rounded">5 ACTIVE NODES</span>
+</div>
+</div>
+<div class="w-full overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="border-b border-outline-variant/30 font-label-caps text-on-surface-variant text-[12px]">
+<th class="py-4 px-4 font-normal">AVATAR</th>
+<th class="py-4 px-4 font-normal">NAME</th>
+<th class="py-4 px-4 font-normal">ROLE</th>
+<th class="py-4 px-4 font-normal">SCOPE CEILING</th>
+<th class="py-4 px-4 font-normal text-right">STATUS</th>
+</tr>
+</thead>
+<tbody class="font-body-md text-body-md">
+<!-- Row 1: HR Admin -->
+<tr class="persona-row border-b border-outline-variant/10 transition-colors">
+<td class="py-6 px-4">
+<img class="w-10 h-10 rounded-full border border-persona-hr" data-alt="A portrait of an HR executive with a professional demeanor. The image is styled with a futuristic, high-contrast aesthetic using deep navy and gold lighting to reflect his senior administrative status. The person is set against a background of digital abstract data flows." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD1cCFTGL07isSY6JS-QM4pjqTbE3UJAzitey5wXdhR_dxfPE_Z6sEgFyk7XxcVfgaAIfY3V_KnmB0arbEY9y7GnvK7fEHd5y3B_uc3SX8LspX7RxT5aDV61T_IofJnM1T33ZhTj5NKQhKiBpCsGsQCr-ftwWNt6l4YW52FYVTz5hOwxdbU6pmyULkGr_BuKklPGYx7MCS4RczvzDIa_-eD9jv5UqurWnqqMbvSlBmUDb0SJe30HJWkL_rmAMBLCi8hvjGKiywDqfI"/>
+</td>
+<td class="py-6 px-4 font-bold text-on-surface">Marcus Chen</td>
+<td class="py-6 px-4">
+<span class="bg-persona-hr/10 text-persona-hr border border-persona-hr/30 px-3 py-1 rounded-full font-label-caps text-[10px]">HR_ADMIN</span>
+</td>
+<td class="py-6 px-4">
+<div class="flex flex-wrap gap-2">
+<span class="font-code-sm text-code-sm bg-surface-container-highest px-2 py-0.5 rounded border border-outline-variant/20 text-on-surface-variant">benefits.admin.*</span>
+<span class="font-code-sm text-code-sm bg-surface-container-highest px-2 py-0.5 rounded border border-outline-variant/20 text-on-surface-variant">pii.read.all</span>
+</div>
+</td>
+<td class="py-6 px-4 text-right">
+<span class="material-symbols-outlined text-status-allow">check_circle</span>
+</td>
+</tr>
+<!-- Row 2: Benefits Specialist -->
+<tr class="persona-row border-b border-outline-variant/10 transition-colors">
+<td class="py-6 px-4">
+<img class="w-10 h-10 rounded-full border border-persona-specialist" data-alt="A portrait of Sarah, the benefits specialist. The visual style is technical and premium, using soft cyan neon accents against a dark slate background. She looks focused and competent, embodying the 'Signal Intelligence' persona of the platform." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA8EQOsKIbMmEYTPnGaz4i1jKgeYpkNUPstlFPV_MjKAiBEaduQPWFMua1Z9BoPby9Xg4lSX53l92dQiRd46DTbbM8n6hA8degFbDEXDxktQV-6k3VcnlpGOqhSNugS9e8Py4vg2Ypdx9HViUe7Um77xd04D2sL66awlQPt3JwTADM8sTW6pFKeoqKUdjxAbMROxvisxmMgVlDMukYtItRmwShu_XyaO5Tei_25gHOtsy8s5a0wMrUOEgLeV9Ij3qFxRnXlJNozzTM"/>
+</td>
+<td class="py-6 px-4 font-bold text-on-surface">Sarah Jenkins</td>
+<td class="py-6 px-4">
+<span class="bg-persona-specialist/10 text-persona-specialist border border-persona-specialist/30 px-3 py-1 rounded-full font-label-caps text-[10px]">BENEFITS_SPECIALIST</span>
+</td>
+<td class="py-6 px-4">
+<div class="flex flex-wrap gap-2">
+<span class="font-code-sm text-code-sm bg-surface-container-highest px-2 py-0.5 rounded border border-outline-variant/20 text-on-surface-variant">benefits.compensation.read</span>
+<span class="font-code-sm text-code-sm bg-surface-container-highest px-2 py-0.5 rounded border border-outline-variant/20 text-on-surface-variant">health.records.view</span>
+</div>
+</td>
+<td class="py-6 px-4 text-right">
+<span class="material-symbols-outlined text-status-allow">check_circle</span>
+</td>
+</tr>
+<!-- Row 3: Employee -->
+<tr class="persona-row border-b border-outline-variant/10 transition-colors">
+<td class="py-6 px-4">
+<img class="w-10 h-10 rounded-full border border-persona-employee" data-alt="A professional portrait of a software engineer representing a standard employee persona. The lighting is deep navy with green accents, and the aesthetic is clean and modern. The setting is a darkened tech environment with subtle bokeh highlights." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCQqcnfPAxdxKXmYE7ufTCjktKR_bAy1o19yCBAywF6FIooFS0kI45J0UPkHbIbyeXSbaDgZoVD0Gm0UftToPRC6XZ0AbNuuFCte-YSvx-yi-cRIz-mOTuyFbTZdPLxzGtKz0VRTQurZlZ4OVMttoebcQTk_NVF3AqHhmdSlvh5hhsaJ8e_soKCQWJ0jZNCpTV1jzaHeJvDb-E4r34YKpHDVn7qUCBNTQEP9THaDZustnnBE4TW-_qC2xDR2g5QhYEngu_YGwNtgvY"/>
+</td>
+<td class="py-6 px-4 font-bold text-on-surface">Alex Rivera</td>
+<td class="py-6 px-4">
+<span class="bg-persona-employee/10 text-persona-employee border border-persona-employee/30 px-3 py-1 rounded-full font-label-caps text-[10px]">EMPLOYEE_SELF</span>
+</td>
+<td class="py-6 px-4">
+<div class="flex flex-wrap gap-2">
+<span class="font-code-sm text-code-sm bg-surface-container-highest px-2 py-0.5 rounded border border-outline-variant/20 text-on-surface-variant">self.benefits.read</span>
+<span class="font-code-sm text-code-sm bg-surface-container-highest px-2 py-0.5 rounded border border-outline-variant/20 text-on-surface-variant">self.profile.update</span>
+</div>
+</td>
+<td class="py-6 px-4 text-right">
+<span class="material-symbols-outlined text-status-allow">check_circle</span>
+</td>
+</tr>
+<!-- Row 4: Security Auditor -->
+<tr class="persona-row border-b border-outline-variant/10 transition-colors">
+<td class="py-6 px-4">
+<img class="w-10 h-10 rounded-full border border-persona-manager" data-alt="A portrait of a security auditor with a sharp, analytical gaze. The color palette features deep indigo and violet highlights. The image is minimalist and authoritative, emphasizing the 'Secured by Okta' brand through high-end corporate digital art." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAIqvu58VZY_bJxVA6f1_c18UW2Bood4aaanzy2oz579qYlEqwqL-03VZvovKp-o4BrENFyjWeQDeHjdh2JDYlm7TQtpeVOoVlE0_ATrFWycATeL5fuCoKLf1W58ww_DkgPAKqCqfmlx8zdtcjh49ILscDDi5pGbI7Z4tjRL_2-1rII_ngiaWivhTJz7HSCD3FzDX2uENLIxjPQiz-Z8PsAh5MqIK5TdeSP7IcJCRQFAmLQ6N9mST8YxQ6Y1vGtC7HP8BuoLBUoWlo"/>
+</td>
+<td class="py-6 px-4 font-bold text-on-surface">Elena Vance</td>
+<td class="py-6 px-4">
+<span class="bg-persona-manager/10 text-persona-manager border border-persona-manager/30 px-3 py-1 rounded-full font-label-caps text-[10px]">AUDIT_MANAGER</span>
+</td>
+<td class="py-6 px-4">
+<div class="flex flex-wrap gap-2">
+<span class="font-code-sm text-code-sm bg-surface-container-highest px-2 py-0.5 rounded border border-outline-variant/20 text-on-surface-variant">logs.read.all</span>
+<span class="font-code-sm text-code-sm bg-surface-container-highest px-2 py-0.5 rounded border border-outline-variant/20 text-on-surface-variant">policy.compliance.view</span>
+</div>
+</td>
+<td class="py-6 px-4 text-right">
+<span class="material-symbols-outlined text-status-allow">check_circle</span>
+</td>
+</tr>
+<!-- Row 5: AI System Agent -->
+<tr class="persona-row transition-colors">
+<td class="py-6 px-4">
+<div class="w-10 h-10 rounded-full bg-status-allow/20 border border-status-allow flex items-center justify-center">
+<span class="material-symbols-outlined text-status-allow">smart_toy</span>
+</div>
+</td>
+<td class="py-6 px-4 font-bold text-on-surface">LLM-Concierge-v4</td>
+<td class="py-6 px-4">
+<span class="bg-status-allow/10 text-status-allow border border-status-allow/30 px-3 py-1 rounded-full font-label-caps text-[10px]">SERVICE_AGENT</span>
+</td>
+<td class="py-6 px-4">
+<div class="flex flex-wrap gap-2">
+<span class="font-code-sm text-code-sm bg-surface-container-highest px-2 py-0.5 rounded border border-outline-variant/20 text-on-surface-variant">context.retrieve</span>
+<span class="font-code-sm text-code-sm bg-surface-container-highest px-2 py-0.5 rounded border border-outline-variant/20 text-on-surface-variant">user.intent.analyze</span>
+</div>
+</td>
+<td class="py-6 px-4 text-right">
+<span class="material-symbols-outlined text-status-allow">check_circle</span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<!-- Feature Grid (Bento Style) -->
+<section class="grid grid-cols-1 md:grid-cols-3 gap-gutter mt-stack-lg">
+<div class="glass-card p-stack-md rounded-2xl md:col-span-2">
+<div class="flex items-center gap-stack-sm mb-stack-sm">
+<span class="material-symbols-outlined text-technical-cyan">analytics</span>
+<h3 class="font-headline-md text-headline-md">Real-time Authorization Feed</h3>
+</div>
+<div class="space-y-stack-sm mt-4">
+<div class="flex items-center justify-between p-3 rounded bg-surface-container-high/50 border border-outline-variant/20">
+<div class="flex items-center gap-3">
+<span class="font-code-sm text-status-allow bg-status-allow/10 px-2 py-0.5 rounded">ALLOW</span>
+<span class="font-code-sm text-on-surface">GET /benefits/compensation/sarah-jenkins</span>
+</div>
+<span class="font-code-sm text-on-surface-variant">2ms</span>
+</div>
+<div class="flex items-center justify-between p-3 rounded bg-surface-container-high/50 border border-outline-variant/20">
+<div class="flex items-center gap-3">
+<span class="font-code-sm text-status-deny bg-status-deny/10 px-2 py-0.5 rounded">DENY</span>
+<span class="font-code-sm text-on-surface">POST /benefits/payroll/global-update</span>
+</div>
+<span class="font-code-sm text-on-surface-variant">1ms</span>
+</div>
+<div class="flex items-center justify-between p-3 rounded bg-surface-container-high/50 border border-outline-variant/20">
+<div class="flex items-center gap-3">
+<span class="font-code-sm text-status-allow bg-status-allow/10 px-2 py-0.5 rounded">ALLOW</span>
+<span class="font-code-sm text-on-surface">GET /pii/records/audit-log</span>
+</div>
+<span class="font-code-sm text-on-surface-variant">4ms</span>
+</div>
+</div>
+</div>
+<div class="glass-card p-stack-md rounded-2xl flex flex-col justify-center items-center text-center">
+<div class="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-stack-md glow-primary">
+<span class="material-symbols-outlined text-primary text-[32px]" style="font-variation-settings: 'FILL' 1;">security</span>
+</div>
+<h3 class="font-headline-md text-headline-md mb-2">JWT Integrity</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Verify every session token against Okta's cryptographic keys in real-time.</p>
+<button class="mt-stack-md text-primary font-label-caps border-b border-primary/30 hover:border-primary transition-all">Inspect Tokens</button>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="w-full py-stack-md border-t border-outline-variant/20 bg-surface-container-lowest flex flex-col md:flex-row justify-between items-center px-margin-page gap-stack-md">
+<div class="flex items-center gap-stack-md">
+<span class="font-label-caps text-label-caps text-primary">Signal Intelligence Ops v2.4.0</span>
+<span class="font-code-sm text-code-sm text-on-surface-variant">© 2024 Secured by Okta for AI</span>
+</div>
+<nav class="flex gap-stack-md">
+<a class="text-on-surface-variant hover:text-primary transition-all font-code-sm text-code-sm" href="#">Documentation</a>
+<a class="text-on-surface-variant hover:text-primary transition-all font-code-sm text-code-sm" href="#">Security Policy</a>
+<a class="text-on-surface-variant hover:text-primary transition-all font-code-sm text-code-sm" href="#">API Reference</a>
+</nav>
+</footer>
+<!-- Story Mode Floating Panel -->
+<div class="fixed bottom-10 left-1/2 -translate-x-1/2 w-[calc(100%-80px)] max-w-container-max z-40 transition-all duration-500 ease-in-out" id="story-panel">
+<div class="glass-card rounded-2xl p-6 glow-cyan border-persona-specialist/40 flex flex-col md:flex-row items-center justify-between gap-6">
+<div class="flex-1">
+<div class="flex items-center gap-2 mb-2">
+<span class="bg-persona-specialist text-on-primary-fixed font-label-caps px-2 py-0.5 rounded text-[10px]">DEMO MODE</span>
+<span class="font-label-caps text-on-surface-variant text-[11px]">STEP 1 OF 5</span>
+</div>
+<h4 class="font-headline-md text-headline-md text-on-surface mb-1">Identity Propagation</h4>
+<p class="font-body-md text-body-md text-on-surface-variant">Watch how Sarah's <span class="text-persona-specialist">BENEFITS_SPECIALIST</span> role is verified by Okta before the AI agent retrieves any compensation data. The system denies any requests outside her Scope Ceiling.</p>
+</div>
+<div class="flex gap-stack-sm shrink-0">
+<button class="px-6 py-3 border border-outline-variant rounded-xl font-headline-md text-on-surface hover:bg-surface-container-high transition-all">Back</button>
+<button class="px-6 py-3 bg-primary text-on-primary rounded-xl font-headline-md hover:opacity-90 transition-all">Continue Journey</button>
+</div>
+<button class="absolute top-4 right-4 text-on-surface-variant hover:text-on-surface" onclick="document.getElementById('story-panel').style.opacity = '0'; setTimeout(()=&gt; document.getElementById('story-panel').style.display = 'none', 500)">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+</div>
+<script>
+        // Micro-interaction for table rows
+        document.querySelectorAll('.persona-row').forEach(row => {
+            row.addEventListener('mouseenter', () => {
+                row.style.transform = 'translateX(4px)';
+                row.style.transition = 'all 0.2s ease-out';
+            });
+            row.addEventListener('mouseleave', () => {
+                row.style.transform = 'translateX(0)';
+            });
+        });
+
+        // Pulsing glow for the scanning button
+        const scanBtn = document.querySelector('header button');
+        setInterval(() => {
+            scanBtn.classList.toggle('opacity-90');
+        }, 1500);
+    </script>
+</body></html>

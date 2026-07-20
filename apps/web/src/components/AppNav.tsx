@@ -4,32 +4,27 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState, useEffect } from 'react';
 
-const NAV_LINKS = [
-  { href: '/chat',      label: 'Agent',       icon: '◈' },
-  { href: '/flow',      label: 'Token Flow',  icon: '⬡' },
-  { href: '/audit',     label: 'Audit',       icon: '▦' },
-  { href: '/story',     label: 'Demo Guide',  icon: '◎' },
+const NAV = [
+  { href: '/',       label: 'Dashboard',   icon: 'shield_person' },
+  { href: '/flow',   label: 'Token Flows', icon: 'account_tree'  },
+  { href: '/chat',   label: 'Agent Chat',  icon: 'smart_toy'     },
+  { href: '/audit',  label: 'Audit Log',   icon: 'list_alt'      },
+  { href: '/story',  label: 'Demo Guide',  icon: 'play_circle'   },
 ];
 
 interface Me {
-  authenticated: boolean;
+  authenticated?: boolean;
   name?: string;
   role?: string;
   email?: string;
   mode?: string;
 }
 
-const ROLE_COLORS: Record<string, string> = {
-  hr_admin:            'rgba(251,191,36,0.15)',
-  benefits_specialist: 'rgba(34,211,238,0.15)',
-  manager:             'rgba(192,132,252,0.15)',
-  employee:            'rgba(52,211,153,0.15)',
-};
-const ROLE_TEXT: Record<string, string> = {
-  hr_admin:            '#fbbf24',
-  benefits_specialist: '#67e8f9',
-  manager:             '#d8b4fe',
-  employee:            '#6ee7b7',
+const ROLE_COLOR: Record<string, string> = {
+  hr_admin:            'var(--persona-hr)',
+  benefits_specialist: 'var(--persona-specialist)',
+  manager:             'var(--persona-manager)',
+  employee:            'var(--persona-employee)',
 };
 
 export function AppNav() {
@@ -37,121 +32,138 @@ export function AppNav() {
   const [me, setMe] = useState<Me | null>(null);
 
   useEffect(() => {
-    fetch('/api/me')
-      .then(r => r.json())
-      .then((d: Me) => setMe(d))
-      .catch(() => {});
+    fetch('/api/me').then(r => r.json()).then((d: Me) => setMe(d)).catch(() => {});
   }, [pathname]);
 
   return (
-    <nav style={{
-      background: 'rgba(5,12,27,0.85)',
-      backdropFilter: 'blur(12px)',
-      borderBottom: '1px solid var(--border-subtle)',
-      position: 'sticky',
-      top: 0,
-      zIndex: 40,
-    }}>
-      <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 24px', height: 52, display: 'flex', alignItems: 'center', gap: 0 }}>
-
-        {/* Logo */}
-        <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none', marginRight: 32 }}>
-          <div style={{
-            width: 28, height: 28,
-            background: 'linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%)',
-            borderRadius: 6,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: 13, fontWeight: 700, color: 'white',
-            fontFamily: 'Syne, system-ui, sans-serif',
-          }}>AI</div>
-          <span style={{ fontFamily: 'Syne, system-ui', fontWeight: 700, fontSize: 14, color: 'var(--text-primary)', letterSpacing: '-0.01em' }}>
+    <>
+      {/* ── Top bar ── */}
+      <header style={{
+        position: 'fixed', top: 0, left: 0, right: 0, height: 64, zIndex: 50,
+        background: 'rgba(19,19,20,0.85)', backdropFilter: 'blur(12px)',
+        borderBottom: '1px solid rgba(69,70,75,0.4)',
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        padding: '0 24px 0 272px',
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <span style={{ fontFamily: 'DM Sans, sans-serif', fontWeight: 700, fontSize: 15, color: 'var(--primary)', letterSpacing: '-0.01em' }}>
             Benefits Portal
           </span>
-          <span style={{ fontSize: 10, color: 'var(--text-muted)', marginLeft: -4 }}>/ Okta for AI</span>
-        </Link>
-
-        {/* Nav links */}
-        <div style={{ display: 'flex', gap: 2, flex: 1 }}>
-          {NAV_LINKS.map(link => {
-            const active = pathname === link.href || pathname.startsWith(link.href + '/');
-            return (
-              <Link key={link.href} href={link.href} style={{
-                display: 'flex', alignItems: 'center', gap: 6,
-                padding: '6px 12px', borderRadius: 6,
-                fontSize: 12, textDecoration: 'none',
-                color: active ? 'var(--blue-l)' : 'var(--text-muted)',
-                background: active ? 'rgba(59,130,246,0.1)' : 'transparent',
-                border: active ? '1px solid rgba(59,130,246,0.2)' : '1px solid transparent',
-                transition: 'all 0.15s',
-              }}
-              onMouseEnter={e => { if (!active) (e.currentTarget as HTMLAnchorElement).style.color = 'var(--text-secondary)'; }}
-              onMouseLeave={e => { if (!active) (e.currentTarget as HTMLAnchorElement).style.color = 'var(--text-muted)'; }}
-              >
-                <span style={{ fontSize: 11, opacity: 0.8 }}>{link.icon}</span>
-                {link.label}
-              </Link>
-            );
-          })}
+          <span style={{ color: 'rgba(144,144,150,0.5)', fontSize: 14 }}>/</span>
+          <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 12, color: 'var(--on-surface-variant)' }}>
+            {NAV.find(n => pathname === n.href || (pathname.startsWith(n.href) && n.href !== '/'))?.label ?? 'Dashboard'}
+          </span>
         </div>
 
-        {/* Right: user pill + mode */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           {me?.mode && (
             <span style={{
-              fontSize: 10, padding: '3px 8px', borderRadius: 4,
-              background: 'rgba(34,211,238,0.08)',
-              border: '1px solid rgba(34,211,238,0.18)',
-              color: 'var(--cyan)',
-              fontFamily: 'DM Mono, monospace',
-            }}>
-              mode:{me.mode}
-            </span>
+              fontFamily: 'JetBrains Mono, monospace', fontSize: 11, fontWeight: 700,
+              padding: '3px 10px', borderRadius: 2,
+              background: 'rgba(34,211,238,0.08)', border: '1px solid rgba(34,211,238,0.2)',
+              color: 'var(--cyan)', letterSpacing: '0.05em', textTransform: 'uppercase',
+            }}>mode:{me.mode}</span>
           )}
+          <span className="pulse-dot" style={{ marginRight: 4 }} />
+          <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, color: 'var(--allow)' }}>LIVE</span>
 
           {me?.authenticated ? (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginLeft: 8 }}>
               <div style={{
-                display: 'flex', alignItems: 'center', gap: 7,
-                padding: '4px 10px 4px 6px', borderRadius: 20,
-                background: me.role ? ROLE_COLORS[me.role] : 'var(--bg-elevated)',
-                border: '1px solid var(--border-default)',
+                display: 'flex', alignItems: 'center', gap: 8,
+                padding: '5px 12px 5px 6px',
+                background: 'var(--surface)', border: '1px solid var(--outline-variant)',
+                borderRadius: 2,
               }}>
                 <div style={{
-                  width: 22, height: 22, borderRadius: '50%',
-                  background: 'linear-gradient(135deg, var(--blue), var(--cyan))',
+                  width: 26, height: 26, borderRadius: '50%',
+                  background: `rgba(${me.role === 'hr_admin' ? '251,191,36' : me.role === 'manager' ? '168,85,247' : '34,211,238'},0.2)`,
+                  border: `1px solid ${ROLE_COLOR[me.role ?? ''] ?? 'var(--outline-variant)'}`,
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontSize: 10, fontWeight: 700, color: 'white',
-                  fontFamily: 'Syne, sans-serif',
+                  fontFamily: 'DM Sans, sans-serif', fontWeight: 700, fontSize: 12,
+                  color: ROLE_COLOR[me.role ?? ''] ?? 'var(--primary)',
                 }}>
                   {(me.name ?? 'U')[0].toUpperCase()}
                 </div>
                 <div>
-                  <div style={{ fontSize: 11, color: 'var(--text-primary)', lineHeight: 1.2 }}>{me.name?.split(' ')[0]}</div>
-                  {me.role && (
-                    <div style={{ fontSize: 10, color: me.role ? ROLE_TEXT[me.role] : 'var(--text-muted)', lineHeight: 1 }}>
-                      {me.role.replace('_', ' ')}
-                    </div>
-                  )}
+                  <div style={{ fontFamily: 'DM Sans, sans-serif', fontSize: 13, fontWeight: 600, color: 'var(--on-surface)', lineHeight: 1.2 }}>
+                    {me.name?.split(' ')[0]}
+                  </div>
+                  <div style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 10, color: ROLE_COLOR[me.role ?? ''] ?? 'var(--on-surface-variant)', lineHeight: 1 }}>
+                    {me.role?.replace('_', ' ')}
+                  </div>
                 </div>
               </div>
               <a href="/auth/logout-client" style={{
-                fontSize: 11, color: 'var(--text-muted)',
-                textDecoration: 'none', padding: '4px 8px',
-              }}
-              onMouseEnter={e => (e.currentTarget.style.color = 'var(--red)')}
-              onMouseLeave={e => (e.currentTarget.style.color = 'var(--text-muted)')}
-              >sign out</a>
+                fontFamily: 'DM Sans, sans-serif', fontSize: 13, color: 'var(--on-surface-variant)',
+                textDecoration: 'none', padding: '5px 10px', borderRadius: 2,
+                background: 'transparent', border: '1px solid transparent',
+                transition: 'color 0.15s',
+              }}>sign out</a>
             </div>
           ) : (
             <a href="/auth/login" style={{
-              padding: '5px 14px', borderRadius: 6,
-              background: 'var(--blue)', color: 'white',
-              fontSize: 12, textDecoration: 'none',
-              fontFamily: 'DM Mono, monospace',
+              fontFamily: 'DM Sans, sans-serif', fontWeight: 600, fontSize: 14,
+              padding: '7px 18px', borderRadius: 2,
+              background: 'var(--primary)', color: 'var(--on-primary)',
+              textDecoration: 'none',
             }}>Sign in</a>
           )}
         </div>
-      </div>
-    </nav>
+      </header>
+
+      {/* ── Sidebar ── */}
+      <aside style={{
+        position: 'fixed', left: 0, top: 0, bottom: 0, width: 248, zIndex: 40,
+        background: 'var(--surface-low)', borderRight: '1px solid rgba(69,70,75,0.4)',
+        display: 'flex', flexDirection: 'column', paddingTop: 64,
+      }}>
+        {/* Brand block */}
+        <div style={{ padding: '24px 20px 16px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+            <span className="material-symbols-outlined fill-1" style={{ color: 'var(--primary)', fontSize: 18 }}>security</span>
+            <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, fontWeight: 700, color: 'var(--primary)', letterSpacing: '0.05em' }}>
+              OPERATOR CONSOLE
+            </span>
+          </div>
+          <div style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 10, color: 'var(--on-surface-variant)', opacity: 0.5, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+            Okta for AI — Identity Signal
+          </div>
+        </div>
+
+        {/* Nav items */}
+        <nav style={{ flex: 1, padding: '8px 10px', display: 'flex', flexDirection: 'column', gap: 2 }}>
+          {NAV.map(item => {
+            const active = item.href === '/'
+              ? pathname === '/'
+              : pathname.startsWith(item.href);
+            return (
+              <Link key={item.href} href={item.href} style={{
+                display: 'flex', alignItems: 'center', gap: 12,
+                padding: '10px 12px', borderRadius: '0.25rem',
+                textDecoration: 'none',
+                background: active ? 'rgba(69,73,95,0.6)' : 'transparent',
+                color: active ? 'var(--secondary)' : 'var(--on-surface-variant)',
+                transition: 'background 0.15s, color 0.15s',
+              }}>
+                <span className={`material-symbols-outlined ${active ? 'fill-1' : ''}`} style={{ fontSize: 20, flexShrink: 0 }}>
+                  {item.icon}
+                </span>
+                <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, fontWeight: 700, letterSpacing: '0.04em', textTransform: 'uppercase' }}>
+                  {item.label}
+                </span>
+              </Link>
+            );
+          })}
+        </nav>
+
+        {/* Footer */}
+        <div style={{ padding: '16px 20px', borderTop: '1px solid rgba(69,70,75,0.3)' }}>
+          <div style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 10, color: 'var(--outline-variant)', letterSpacing: '0.04em' }}>
+            ID-JAG Protocol — Mode A
+          </div>
+        </div>
+      </aside>
+    </>
   );
 }

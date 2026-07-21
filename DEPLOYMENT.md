@@ -1,141 +1,168 @@
-# Deployment Guide — Benefits Portal (Okta for AI Demo)
+# Vercel Deployment Guide — Benefits Portal (Okta for AI Demo)
 
-## Architecture overview
+**GitHub repo:** https://github.com/btbokta/benefits-app  
+**Architecture:** Single Next.js app on Vercel. No separate database or second service required.
 
-Everything deploys to **Vercel** as a single Next.js app.
-
-| What | Where | Notes |
-|---|---|---|
-| `apps/web` | Vercel | Includes both the UI and the resource-server API routes at `/api/rs/*` |
-| Data | In-memory (JSON seed files) | Employees/plans/PTO seeded from JSON on cold start. Audit log in-memory — resets on redeploy/cold start. Acceptable for demo use. |
-
-> **Local dev:** The Express resource server (`apps/resource-server`) still runs on :3001 when you `npm run dev` — set `RESOURCE_SERVER_URL=http://localhost:3001` in your local `.env` to use it. On Vercel, leave `RESOURCE_SERVER_URL` unset and it auto-uses the Next.js routes.
-
-> **Caveat:** Audit log entries do not survive Vercel redeployments or cold starts (Vercel scales down idle functions after ~5 min inactivity). The demo story still works — the log fills up as you run queries during a session.
+> **Data note:** Employee/benefits data loads from bundled JSON files on every cold start. The audit log is in-memory and resets on redeploy or cold start (~5 min idle). This is acceptable for demo use.
 
 ---
 
-## Step 1 — Push to GitHub
+## Step 1 — Create the Vercel project
 
-The `benefits-agent/` directory has its own git repo. Create a new GitHub repository and push to it.
+1. Go to **https://vercel.com/new**
+2. Click **Import Git Repository** → select **`btbokta/benefits-app`**
+3. Configure the project settings:
 
-**Option A — GitHub CLI (fastest):**
-```bash
-cd benefits-agent
-gh repo create btbokta/benefits-agent-demo --public --source=. --remote=origin --push
-```
+| Setting | Value |
+|---|---|
+| **Framework Preset** | Next.js *(auto-detected)* |
+| **Root Directory** | `apps/web` |
+| **Install Command** | `cd ../.. && npm install --cache /tmp/npm-cache` |
+| **Build Command** | `next build` |
+| **Output Directory** | `.next` *(default)* |
 
-**Option B — Manual:**
-1. Go to https://github.com/new → name it `benefits-agent-demo` → Create
-2. In `benefits-agent/`:
-```bash
-git remote add origin https://github.com/btbokta/benefits-agent-demo.git
-git branch -M main
-git push -u origin main
-```
+4. **Do not deploy yet** — add environment variables first (Step 2).
 
 ---
 
-## Step 2 — Deploy to Vercel
+## Step 2 — Add environment variables
 
-1. Go to https://vercel.com/new → Import Git Repository → select `benefits-app`
-2. **Framework Preset**: Next.js (auto-detected)
-3. **Root Directory**: `apps/web`
-4. **Install Command**: `cd ../.. && npm install --cache /tmp/npm-cache`
-5. **Build Command**: `next build`
-6. **Output Directory**: `.next` (default)
+Go to **Project Settings → Environment Variables** and add each variable below. Set all of them to apply to **Production**, **Preview**, and **Development** environments.
 
-**Environment variables** (Project Settings → Environment Variables → add each):
+### Okta — Authentication
 
-```bash
-# Okta
-OKTA_ORG_URL=https://veridiandynamics.okta.com
-OKTA_AI_MODE=agents
-OKTA_WEB_CLIENT_ID=0oa15eg6vx5RZbYjf698
-OKTA_WEB_CLIENT_SECRET=<from Okta app>
-OKTA_REDIRECT_URI=https://your-app.vercel.app/auth/callback
-OKTA_POST_LOGOUT_URI=https://your-app.vercel.app
+| Variable | Value |
+|---|---|
+| `OKTA_ORG_URL` | `https://veridiandynamics.okta.com` |
+| `OKTA_AI_MODE` | `agents` |
+| `OKTA_WEB_CLIENT_ID` | `0oa15eg6vx5RZbYjf698` |
+| `OKTA_WEB_CLIENT_SECRET` | *(from Okta: Applications → Benefits Agent - Web → Client Credentials)* |
+| `OKTA_REDIRECT_URI` | `https://your-app.vercel.app/auth/callback` *(update after first deploy)* |
+| `OKTA_POST_LOGOUT_URI` | `https://your-app.vercel.app` *(update after first deploy)* |
 
-# Agent identity
-OKTA_AGENT_CLIENT_ID=wlp15eh9z6hj8G8tb698
-OKTA_AGENT_PRIVATE_JWK=<paste full PEM including BEGIN/END lines>
-OKTA_AGENT_KID=<your KID>
+### Okta — AI Agent identity
 
-# Resource server (leave RESOURCE_SERVER_URL unset — auto-uses VERCEL_URL)
-RESOURCE_AUDIENCE=api://default
-RESOURCE_BASE_URL=https://your-app.vercel.app
-USER_IDENTITY_CLAIM=sub
+| Variable | Value |
+|---|---|
+| `OKTA_AGENT_CLIENT_ID` | `wlp15eh9z6hj8G8tb698` |
+| `OKTA_AGENT_KID` | `5f28da21625d2c9c30e94d17b2963a65` |
+| `OKTA_AGENT_PRIVATE_JWK` | *(full PEM — see note below)* |
 
-# Session
-SESSION_SECRET=<generate: openssl rand -hex 32>
+> **OKTA_AGENT_PRIVATE_JWK — how to paste it:**  
+> In the Vercel UI, click the variable name field, type `OKTA_AGENT_PRIVATE_JWK`, then in the value field paste the entire PEM block including the header and footer lines:
+> ```
+> -----BEGIN PRIVATE KEY-----
+> MIIEvg...
+> -----END PRIVATE KEY-----
+> ```
+> Vercel preserves multi-line values — do not collapse it to a single line.
 
-# LLM
-ANTHROPIC_API_KEY=<your key>
-ANTHROPIC_BASE_URL=<your LiteLLM base URL>
-ANTHROPIC_MODEL=claude-sonnet-4-6
-MOCK_LLM=false
-AGENT_TOOL_TRANSPORT=rest
+### Resource server
 
-# Public (visible client-side)
-NEXT_PUBLIC_OKTA_ORG_URL=https://veridiandynamics.okta.com
-```
+| Variable | Value |
+|---|---|
+| `RESOURCE_AUDIENCE` | `api://default` |
+| `RESOURCE_BASE_URL` | `https://your-app.vercel.app` *(update after first deploy)* |
+| `USER_IDENTITY_CLAIM` | `sub` |
 
-> **PEM key:** Paste the full multi-line PEM directly into the Vercel env var UI — it handles newlines correctly.
+> **Do not set `RESOURCE_SERVER_URL`** — leaving it unset tells the app to call its own `/api/rs/*` routes using the Vercel deployment URL automatically.
+
+### Session
+
+| Variable | Value |
+|---|---|
+| `SESSION_SECRET` | *(generate: run `openssl rand -hex 32` in your terminal)* |
+
+### LLM
+
+| Variable | Value |
+|---|---|
+| `ANTHROPIC_API_KEY` | *(your key — starts with `sk-as-WS`)* |
+| `ANTHROPIC_BASE_URL` | *(your LiteLLM proxy base URL)* |
+| `ANTHROPIC_MODEL` | `claude-sonnet-4-6` |
+| `MOCK_LLM` | `false` |
+| `AGENT_TOOL_TRANSPORT` | `rest` |
+
+### Public (exposed to the browser)
+
+| Variable | Value |
+|---|---|
+| `NEXT_PUBLIC_OKTA_ORG_URL` | `https://veridiandynamics.okta.com` |
 
 ---
 
-## Step 4 — Update Okta callback URLs
+## Step 3 — Deploy
 
-The deployed app needs its production URLs registered in Okta.
+Click **Deploy**. The first build takes ~2 minutes.
 
-**Admin Console → Applications → Benefits Agent - Web → General tab:**
+Once complete, Vercel shows your deployment URL (e.g. `https://benefits-app-abc123.vercel.app`). Copy it.
+
+---
+
+## Step 4 — Update URLs with your production domain
+
+### 4a — Update Vercel environment variables
+
+Go back to **Project Settings → Environment Variables** and update:
+
+| Variable | New value |
+|---|---|
+| `OKTA_REDIRECT_URI` | `https://your-actual-domain.vercel.app/auth/callback` |
+| `OKTA_POST_LOGOUT_URI` | `https://your-actual-domain.vercel.app` |
+| `RESOURCE_BASE_URL` | `https://your-actual-domain.vercel.app` |
+
+Then **redeploy** (Deployments → ⋯ → Redeploy).
+
+### 4b — Update Okta
+
+**Applications → Benefits Agent - Web → General tab:**
 
 Add to **Sign-in redirect URIs**:
 ```
-https://your-app.vercel.app/auth/callback
+https://your-actual-domain.vercel.app/auth/callback
 ```
 
 Add to **Sign-out redirect URIs**:
 ```
-https://your-app.vercel.app
+https://your-actual-domain.vercel.app
 ```
 
-**Admin Console → Security → API → Trusted Origins → Add Origin:**
-- Origin: `https://your-app.vercel.app`
+**Security → API → Trusted Origins → Add Origin:**
+- Origin: `https://your-actual-domain.vercel.app`
 - Check both **CORS** and **Redirect**
 
 ---
 
-## Step 5 — Re-run or verify setup
+## Step 5 — Verify the deployment
 
-If you want to verify your Okta org config is still correct after deployment:
+Open your Vercel URL in an **incognito window** and run through these checks:
 
-```bash
-cd benefits-agent
-OKTA_ORG_URL=https://veridiandynamics.okta.com OKTA_API_TOKEN=your_token node scripts/verify-okta.mjs
-```
-
----
-
-## Step 6 — Test end-to-end
-
-1. Visit `https://your-app.vercel.app`
-2. Sign in (incognito) as `emily.davis@acmecorp.example`
-3. Ask "How much PTO do I have?" → should return Emily's data
-4. Ask "What is my salary?" → should show live Okta denial
-5. Visit `/flow` → token chain should show live exchange
-6. Check `/audit` (as Sarah) → decisions should persist in Railway's SQLite
+| Check | Expected result |
+|---|---|
+| Home page loads | Persona list visible, "Sign in with Okta" button present |
+| Sign in as `emily.davis@acmecorp.example` | Redirects to Okta login, returns to portal with role `employee` |
+| Chat → "How much PTO do I have?" | Returns Emily's PTO balance |
+| Chat → "What is my salary?" | Live Okta denial — `benefits.compensation.read` missing |
+| `/flow` | Three-node token chain with live decoded JWT |
+| Sign out as Emily, sign in as `sarah.johnson@acmecorp.example` | Role shows `hr_admin`, full scope ceiling |
+| Chat → "What is Michael Chen's salary?" | Returns salary (Sarah has compensation scope) |
+| `/audit` | Shows allow + deny decisions from this session |
 
 ---
 
-## Notes
+## Troubleshooting
 
-**SQLite on Railway:** The database seeds automatically on startup. Data persists between restarts but resets on re-deploy. For a demo this is fine — seed data is deterministic.
+**Build fails with "Cannot find module"**  
+Make sure Root Directory is `apps/web` and Install Command is `cd ../.. && npm install --cache /tmp/npm-cache`.
 
-**Vercel monorepo build:** If the build fails with missing workspace dependencies, change the Install Command in Vercel to:
-```
-npm install --prefix ../..
-```
-and Root Directory to `apps/web`.
+**Login returns 400**  
+The redirect URI in Okta doesn't match `OKTA_REDIRECT_URI`. Check for trailing slashes or `http` vs `https`.
 
-**Scaling:** For a real deployment, swap SQLite for Postgres (Railway provides managed Postgres). The `better-sqlite3` calls in `packages/shared/src/db.ts` would need to be replaced with a Postgres client.
+**Broker returns 502 (hop1/hop2 error)**  
+The agent isn't activated in Okta, or the PEM key doesn't match the registered public key. Check Directory → AI Agents → BenefitsAgentV2 → Credentials tab (key must be Active).
+
+**`user_not_found` on every tool call**  
+The signed-in user's email doesn't match one of the 10 seeded employees (`@acmecorp.example`). Sign in as one of the personas listed on the home page.
+
+**Audit log is empty after redeploy**  
+Expected — in-memory audit log resets on each deploy. Run a few queries to repopulate it.

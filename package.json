@@ -8,6 +8,9 @@
     "test": "vitest run",
     "seed": "tsx packages/shared/src/seed/run-seed.ts"
   },
+  "dependencies": {
+    "next": "14.2.29"
+  },
   "devDependencies": {
     "concurrently": "^9.1.0",
     "vitest": "^3.0.0",

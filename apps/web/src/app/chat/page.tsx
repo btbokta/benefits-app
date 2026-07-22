@@ -247,7 +247,7 @@ export default function ChatPage() {
                     scope: <span style={{ color: 'var(--text-secondary)' }}>{ev.scopeRequired.replace('benefits.', '')}</span>
                   </div>
                   <div style={{ fontSize: 10, color: 'var(--text-muted)' }}>HTTP {ev.httpStatus}</div>
-                  {!ev.allowed && (ev.output as Record<string, unknown>)?.missingScopes && (
+                  {!ev.allowed && Boolean((ev.output as Record<string, unknown>)?.missingScopes) && (
                     <div style={{ fontSize: 10, color: 'var(--red)', marginTop: 3 }}>
                       missing: {((ev.output as Record<string, unknown>).missingScopes as string[])
                         .map(s => s.replace('benefits.', '')).join(', ')}

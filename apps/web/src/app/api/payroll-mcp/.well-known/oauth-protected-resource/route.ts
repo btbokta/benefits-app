@@ -1,7 +1,8 @@
 export function GET() {
-  const base = process.env.VERCEL_URL
-    ? `https://${process.env.VERCEL_URL}/api/payroll-mcp`
-    : 'http://localhost:3002';
+  // VERCEL_PROJECT_PRODUCTION_URL is the stable production hostname (e.g. benefits-app-five.vercel.app)
+  // VERCEL_URL is deployment-specific and changes per deploy — must not be used here
+  const host = process.env.VERCEL_PROJECT_PRODUCTION_URL ?? process.env.VERCEL_URL;
+  const base = host ? `https://${host}/api/payroll-mcp` : 'http://localhost:3002';
   return Response.json({
     resource: base,
     authorization_servers: [`${process.env.OKTA_ORG_URL}/oauth2/default`],

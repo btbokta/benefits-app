@@ -13,7 +13,9 @@ const RS = getRsBase();
 // Vercel: Next.js route at /api/payroll-mcp (PAYROLL_MCP_URL unset)
 function getPayrollMcpUrl(): string {
   if (process.env.PAYROLL_MCP_URL) return process.env.PAYROLL_MCP_URL;
-  if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}/api/payroll-mcp`;
+  // Use VERCEL_PROJECT_PRODUCTION_URL (stable) not VERCEL_URL (deployment-specific)
+  const host = process.env.VERCEL_PROJECT_PRODUCTION_URL ?? process.env.VERCEL_URL;
+  if (host) return `https://${host}/api/payroll-mcp`;
   return 'http://localhost:3002/mcp';
 }
 

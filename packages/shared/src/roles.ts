@@ -9,23 +9,28 @@ export const ROLE_SCOPES: Record<Role, Scope[]> = {
     'benefits.enrollment.write',
     'benefits.pto.read',
     'benefits.audit.read',
+    'payroll.read',
+    'payroll.adjust',
   ],
   benefits_specialist: [
     'benefits.record.read',
     'benefits.enrollment.read',
     'benefits.enrollment.write',
     'benefits.pto.read',
+    'payroll.read',
   ],
   manager: [
     'benefits.record.read',
     'benefits.enrollment.read',
     'benefits.pto.read',
+    'payroll.read',
   ],
   employee: [
     'benefits.record.read',
     'benefits.enrollment.read',
     'benefits.enrollment.write',
     'benefits.pto.read',
+    'payroll.read',
   ],
 };
 

@@ -1,0 +1,12 @@
+[
+  { "employeeEmail": "sarah.johnson@acmecorp.example", "filingStatus": "married", "allowances": 2, "additionalWithholding": 0, "exemptFromFederal": false },
+  { "employeeEmail": "james.wilson@acmecorp.example", "filingStatus": "single", "allowances": 1, "additionalWithholding": 0, "exemptFromFederal": false },
+  { "employeeEmail": "michael.chen@acmecorp.example", "filingStatus": "married", "allowances": 2, "additionalWithholding": 100, "exemptFromFederal": false },
+  { "employeeEmail": "emily.davis@acmecorp.example", "filingStatus": "single", "allowances": 1, "additionalWithholding": 0, "exemptFromFederal": false },
+  { "employeeEmail": "lisa.park@acmecorp.example", "filingStatus": "single", "allowances": 0, "additionalWithholding": 50, "exemptFromFederal": false },
+  { "employeeEmail": "david.kim@acmecorp.example", "filingStatus": "single", "allowances": 0, "additionalWithholding": 0, "exemptFromFederal": false },
+  { "employeeEmail": "rachel.torres@acmecorp.example", "filingStatus": "single", "allowances": 1, "additionalWithholding": 0, "exemptFromFederal": false },
+  { "employeeEmail": "marcus.williams@acmecorp.example", "filingStatus": "married", "allowances": 2, "additionalWithholding": 0, "exemptFromFederal": false },
+  { "employeeEmail": "priya.sharma@acmecorp.example", "filingStatus": "married", "allowances": 1, "additionalWithholding": 0, "exemptFromFederal": false },
+  { "employeeEmail": "jordan.lee@acmecorp.example", "filingStatus": "married", "allowances": 2, "additionalWithholding": 0, "exemptFromFederal": false }
+]

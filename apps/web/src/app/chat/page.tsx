@@ -223,13 +223,15 @@ export default function ChatPage() {
             </p>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-              {allEvents.map((ev, i) => (
+              {allEvents.map((ev, i) => {
+                const isMcp = ['get_pay_summary','list_pay_stubs','get_tax_withholding','request_salary_adjustment'].includes(ev.tool);
+                return (
                 <div key={i} style={{
                   padding: '10px 12px', borderRadius: 8,
                   background: ev.allowed ? 'rgba(52,211,153,0.06)' : 'rgba(248,113,113,0.06)',
                   border: `1px solid ${ev.allowed ? 'rgba(52,211,153,0.2)' : 'rgba(248,113,113,0.2)'}`,
                 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 5 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
                     <span style={{ fontSize: 12, fontFamily: 'DM Mono, monospace', color: 'var(--text-primary)', fontWeight: 500 }}>
                       {ev.tool}
                     </span>
@@ -243,18 +245,30 @@ export default function ChatPage() {
                       {ev.allowed ? 'ALLOW' : 'DENY'}
                     </span>
                   </div>
+                  <div style={{ marginBottom: 4 }}>
+                    <span style={{
+                      fontSize: 9, padding: '1px 5px', borderRadius: 3, fontFamily: 'DM Mono, monospace', fontWeight: 600, letterSpacing: '0.04em',
+                      ...(isMcp
+                        ? { background: 'rgba(139,92,246,0.15)', color: '#a78bfa', border: '1px solid rgba(139,92,246,0.3)' }
+                        : { background: 'rgba(59,130,246,0.15)', color: '#60a5fa', border: '1px solid rgba(59,130,246,0.3)' }
+                      ),
+                    }}>
+                      {isMcp ? 'MCP · Meridian Payroll' : 'REST · Benefits RS'}
+                    </span>
+                  </div>
                   <div style={{ fontSize: 10, color: 'var(--text-muted)' }}>
-                    scope: <span style={{ color: 'var(--text-secondary)' }}>{ev.scopeRequired.replace('benefits.', '')}</span>
+                    scope: <span style={{ color: 'var(--text-secondary)' }}>{ev.scopeRequired}</span>
                   </div>
                   <div style={{ fontSize: 10, color: 'var(--text-muted)' }}>HTTP {ev.httpStatus}</div>
                   {!ev.allowed && Boolean((ev.output as Record<string, unknown>)?.missingScopes) && (
                     <div style={{ fontSize: 10, color: 'var(--red)', marginTop: 3 }}>
                       missing: {((ev.output as Record<string, unknown>).missingScopes as string[])
-                        .map(s => s.replace('benefits.', '')).join(', ')}
+                        .join(', ')}
                     </div>
                   )}
                 </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>

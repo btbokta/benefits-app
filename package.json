@@ -3,8 +3,8 @@
   "private": true,
   "workspaces": ["apps/*", "packages/*"],
   "scripts": {
-    "dev": "node scripts/prepare-env.mjs && concurrently -n web,rs -c cyan,yellow \"npm run dev -w apps/web\" \"npm run dev -w apps/resource-server\"",
-    "build": "npm run build -w packages/shared && npm run build -w apps/resource-server && npm run build -w apps/web",
+    "dev": "node scripts/prepare-env.mjs && concurrently -n web,rs,mcp -c cyan,yellow,magenta \"npm run dev -w apps/web\" \"npm run dev -w apps/resource-server\" \"npm run dev -w apps/mcp-server\"",
+    "build": "npm run build -w packages/shared && npm run build -w apps/resource-server && npm run build -w apps/mcp-server && npm run build -w apps/web",
     "test": "vitest run",
     "seed": "tsx packages/shared/src/seed/run-seed.ts"
   },

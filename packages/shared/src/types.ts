@@ -7,7 +7,9 @@ export type Scope =
   | 'benefits.enrollment.read'
   | 'benefits.enrollment.write'
   | 'benefits.pto.read'
-  | 'benefits.audit.read';
+  | 'benefits.audit.read'
+  | 'payroll.read'
+  | 'payroll.adjust';
 
 export const ALL_SCOPES: Scope[] = [
   'benefits.record.read',
@@ -17,7 +19,29 @@ export const ALL_SCOPES: Scope[] = [
   'benefits.enrollment.write',
   'benefits.pto.read',
   'benefits.audit.read',
+  'payroll.read',
+  'payroll.adjust',
 ];
+
+export interface PayStub {
+  employeeEmail: string;
+  payDate: string;
+  grossPay: number;
+  netPay: number;
+  federalTax: number;
+  stateTax: number;
+  socialSecurity: number;
+  medicare: number;
+  benefits: number;
+}
+
+export interface TaxElection {
+  employeeEmail: string;
+  filingStatus: 'single' | 'married' | 'head_of_household';
+  allowances: number;
+  additionalWithholding: number;
+  exemptFromFederal: boolean;
+}
 
 export interface Employee {
   id: number;

@@ -18,6 +18,7 @@ if (!existsSync(src)) {
 const targets = [
   resolve(root, 'apps/web/.env.local'),
   resolve(root, 'apps/resource-server/.env'),
+  resolve(root, 'apps/mcp-server/.env'),
 ];
 
 for (const target of targets) {

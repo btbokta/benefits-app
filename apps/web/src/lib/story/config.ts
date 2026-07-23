@@ -95,4 +95,28 @@ export const STORY_BEATS: StoryBeat[] = [
     actionTarget: '/audit',
     requiresPersona: 'sarah',
   },
+  {
+    step: 11,
+    title: 'One token, two systems',
+    narration: 'The Benefits Portal talks to a second downstream system: Meridian Payroll, an external HR vendor exposed via an MCP server. The agent uses the same Okta-issued access token to call Meridian Payroll — no separate login, no second credential. Meridian Payroll validates the token against the same Okta JWKS endpoint, enforcing payroll.read and payroll.adjust scopes independently.',
+    action: 'navigate',
+    actionTarget: '/chat',
+    requiresPersona: 'sarah',
+  },
+  {
+    step: 12,
+    title: 'Payroll data via MCP',
+    narration: 'Sarah\'s token includes payroll.read. When the agent queries Meridian Payroll for pay stubs, the MCP server validates the token, sees payroll.read in the scp claim, and returns the data. Notice the purple MCP badge in the Authorization Trace — it distinguishes Meridian Payroll calls from Benefits RS calls, showing two independent systems enforcing Okta policy from a single token.',
+    action: 'query',
+    actionTarget: 'Show me the last 3 paychecks for Emily Davis',
+    requiresPersona: 'sarah',
+  },
+  {
+    step: 13,
+    title: 'Scope denied at the MCP boundary',
+    narration: 'Now sign back in as Emily. She has payroll.read — she can see her own pay stubs. But she does not have payroll.adjust. When she tries to change her salary, the request hits the Meridian Payroll MCP server, which checks the scp claim, finds payroll.adjust missing, and returns a hard denial. The agent reports it immediately. Same token, same policy plane — enforced at a completely separate system.',
+    action: 'query',
+    actionTarget: 'Request a salary adjustment to increase my salary to $150,000',
+    requiresPersona: 'emily',
+  },
 ];

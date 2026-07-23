@@ -1,5 +1,3 @@
-import { z } from 'zod';
-
 // Local dev with Express RS: RESOURCE_SERVER_URL=http://localhost:3001
 // Vercel: RESOURCE_SERVER_URL=https://your-app.vercel.app (or auto via VERCEL_URL)
 // Local dev without Express RS: falls back to same Next.js server on :3000
@@ -9,6 +7,47 @@ function getRsBase(): string {
   return 'http://localhost:3000';
 }
 const RS = getRsBase();
+
+// Meridian Payroll MCP server URL
+// Local dev: Express server on :3002 at /mcp
+// Vercel: Next.js route at /api/payroll-mcp (PAYROLL_MCP_URL unset)
+function getPayrollMcpUrl(): string {
+  if (process.env.PAYROLL_MCP_URL) return process.env.PAYROLL_MCP_URL;
+  if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}/api/payroll-mcp`;
+  return 'http://localhost:3002/mcp';
+}
+
+async function mcpCall(toolName: string, args: Record<string, unknown>, bearerToken: string): Promise<{ status: number; body: unknown }> {
+  let res: Response;
+  try {
+    res = await fetch(getPayrollMcpUrl(), {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${bearerToken}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ jsonrpc: '2.0', method: 'tools/call', params: { name: toolName, arguments: args }, id: 1 }),
+    });
+  } catch (err) {
+    return { status: 503, body: { error: `Meridian Payroll MCP unreachable: ${String(err)}` } };
+  }
+  if (res.status === 401 || res.status === 403) {
+    return { status: res.status, body: { denied: true, error: 'unauthorized' } };
+  }
+  const data = await res.json().catch(() => ({})) as Record<string, unknown>;
+  if (data.error) {
+    const rpcErr = data.error as Record<string, unknown>;
+    if (rpcErr.code === -32001) return { status: 401, body: { denied: true, error: rpcErr.message } };
+    return { status: 500, body: { error: rpcErr.message } };
+  }
+  const result = data.result as { content?: Array<{ type: string; text: string }> } | undefined;
+  const text = result?.content?.[0]?.type === 'text' ? result.content[0].text : undefined;
+  if (text) {
+    try {
+      const parsed = JSON.parse(text) as Record<string, unknown>;
+      if (parsed.denied) return { status: 403, body: parsed };
+      return { status: 200, body: parsed };
+    } catch { /* non-JSON text result */ }
+  }
+  return { status: 200, body: result ?? data };
+}
 
 export interface ToolEvent {
   tool: string;
@@ -45,7 +84,11 @@ export type ToolName =
   | 'get_pto'
   | 'get_compensation'
   | 'read_audit'
-  | 'enroll_in_plan';
+  | 'enroll_in_plan'
+  | 'get_pay_summary'
+  | 'list_pay_stubs'
+  | 'get_tax_withholding'
+  | 'request_salary_adjustment';
 
 export const TOOL_DEFINITIONS = [
   {
@@ -125,6 +168,54 @@ export const TOOL_DEFINITIONS = [
     },
     scopeRequired: 'benefits.audit.read',
   },
+  // Meridian Payroll MCP tools
+  {
+    name: 'get_pay_summary' as ToolName,
+    description: 'Get the most recent pay stub summary for an employee from Meridian Payroll (requires payroll.read)',
+    input_schema: {
+      type: 'object',
+      properties: { employee_email: { type: 'string', description: 'Employee email address' } },
+      required: ['employee_email'],
+    },
+    scopeRequired: 'payroll.read',
+  },
+  {
+    name: 'list_pay_stubs' as ToolName,
+    description: 'List recent pay stubs for an employee from Meridian Payroll (requires payroll.read)',
+    input_schema: {
+      type: 'object',
+      properties: {
+        employee_email: { type: 'string', description: 'Employee email address' },
+        count: { type: 'number', description: 'Number of stubs to return (1-6, default 3)' },
+      },
+      required: ['employee_email'],
+    },
+    scopeRequired: 'payroll.read',
+  },
+  {
+    name: 'get_tax_withholding' as ToolName,
+    description: 'Get W-4 tax withholding elections for an employee from Meridian Payroll (requires payroll.read)',
+    input_schema: {
+      type: 'object',
+      properties: { employee_email: { type: 'string', description: 'Employee email address' } },
+      required: ['employee_email'],
+    },
+    scopeRequired: 'payroll.read',
+  },
+  {
+    name: 'request_salary_adjustment' as ToolName,
+    description: 'Submit a salary adjustment request via Meridian Payroll (requires payroll.adjust — hr_admin only)',
+    input_schema: {
+      type: 'object',
+      properties: {
+        employee_email: { type: 'string', description: 'Employee email address' },
+        new_salary: { type: 'number', description: 'New annual salary in USD' },
+        reason: { type: 'string', description: 'Justification for the adjustment (min 10 characters)' },
+      },
+      required: ['employee_email', 'new_salary', 'reason'],
+    },
+    scopeRequired: 'payroll.adjust',
+  },
 ];
 
 export async function executeTool(
@@ -168,6 +259,19 @@ export async function executeTool(
       res = await rsGet(`/api/rs/audit${q}`, bearerToken);
       break;
     }
+    // Meridian Payroll MCP tools
+    case 'get_pay_summary':
+      res = await mcpCall('get_pay_summary', { employee_email: input.employee_email }, bearerToken);
+      break;
+    case 'list_pay_stubs':
+      res = await mcpCall('list_pay_stubs', { employee_email: input.employee_email, count: input.count }, bearerToken);
+      break;
+    case 'get_tax_withholding':
+      res = await mcpCall('get_tax_withholding', { employee_email: input.employee_email }, bearerToken);
+      break;
+    case 'request_salary_adjustment':
+      res = await mcpCall('request_salary_adjustment', { employee_email: input.employee_email, new_salary: input.new_salary, reason: input.reason }, bearerToken);
+      break;
     default:
       res = { status: 400, body: { error: 'unknown_tool' } };
   }
